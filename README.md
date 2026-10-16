@@ -42,6 +42,14 @@ Genera en `dist/` un **instalador** (`CondorCapital-Instalador-0.1.0.exe`, con a
 
 Windows puede mostrar "Windows protegió su PC" porque el ejecutable no está firmado digitalmente (firmar cuesta dinero). Haz clic en *Más información → Ejecutar de todas formas*.
 
+### Descargar el instalador hecho por GitHub (sin compilar nada)
+Cada vez que se sube un cambio, GitHub arma el juego automáticamente:
+1. En el repositorio, entra a la pestaña **Actions** → **Construir para Windows** → la ejecución más reciente con ✓ verde.
+2. Abajo, en **Artifacts**, descarga **CondorCapital-Instalador** (llega como .zip).
+3. Descomprímelo y ejecuta `CondorCapital-Instalador-0.1.0.exe`. El instalador crea el acceso directo **Cóndor Capital** en tu escritorio y en el menú Inicio.
+
+También puedes lanzarlo a mano con el botón **Run workflow** en esa misma página.
+
 ### Jugar en el navegador (modo desarrollo)
 ```bash
 npm run web
