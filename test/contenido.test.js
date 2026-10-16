@@ -143,10 +143,8 @@ test.before(async () => {
 
 for (const { donde, paso, repaso } of todosLosEjercicios()) {
   test(`ejercicio ${donde}`, async () => {
-    // Transitorio: "explicacion" y 3 pistas se vuelven obligatorias cuando termine la
-    // auditoría de contenido en curso (docs/guia-contenido.md). Mientras tanto se
-    // exigen solo las reglas que el contenido actual ya cumple.
-    const problemas = await auditarEjercicio(paso, motores, { exigirExplicacion: false, minimoPistas: 2 });
+    // Reglas de docs/guia-contenido.md: explicación obligatoria y 3 pistas (2 en repasos).
+    const problemas = await auditarEjercicio(paso, motores, { minimoPistas: repaso ? 2 : 3 });
     assert.deepEqual(problemas, [], problemas.join('\n'));
   });
 }

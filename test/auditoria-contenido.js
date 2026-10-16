@@ -22,10 +22,7 @@ export function textoRetroalimentacion(v) {
 }
 
 function sinTildes(s) {
-  return s
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase();
+  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
 
 export async function auditarEjercicio(paso, motores, { exigirExplicacion = true, minimoPistas = 3 } = {}) {

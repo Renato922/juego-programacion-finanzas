@@ -198,7 +198,8 @@ function verificarSalida(v, salidaUsuario, salidaReferencia) {
     if (esperada === obtenida) return null;
     if (sinSalida) return { mensaje: AYUDA_SIN_SALIDA, esperado: esperada };
     if (esperada.toLowerCase() === obtenida.toLowerCase()) return { mensaje: 'Casi: revisa mayúsculas y minúsculas en lo que imprimes.', esperado: esperada };
-    if (esperada.replace(/\s+/g, '') === obtenida.replace(/\s+/g, '')) return { mensaje: 'Casi: el texto es correcto pero sobran o faltan espacios.', esperado: esperada };
+    if (esperada.replace(/\s+/g, '') === obtenida.replace(/\s+/g, ''))
+      return { mensaje: 'Casi: el texto es correcto pero sobran o faltan espacios.', esperado: esperada };
     return { mensaje: `Lo que imprimes no coincide con lo esperado. Tu código imprimió: «${recortarTexto(obtenida)}»`, esperado: esperada };
   }
   if (modo === 'contiene') {
@@ -363,6 +364,7 @@ export function validarSQL({ resUsuario, resReferencia, opciones = {}, codigo = 
   if (colsU.length !== colsR.length) {
     fallas.push({
       mensaje: `Tu consulta devuelve ${colsU.length} columna(s) y se esperaban ${colsR.length}: ${colsR.join(', ')}.`,
+      ayuda: opciones.ayuda,
     });
     return { ok: false, fallas };
   }
@@ -378,6 +380,7 @@ export function validarSQL({ resUsuario, resReferencia, opciones = {}, codigo = 
     fallas.push({
       mensaje: `Tu consulta devuelve ${filasU.length} fila(s) y se esperaban ${filasR.length}.`,
       esperado: `${filasR.length} filas`,
+      ayuda: opciones.ayuda,
     });
     return { ok: false, fallas };
   }
@@ -403,6 +406,8 @@ export function validarSQL({ resUsuario, resReferencia, opciones = {}, codigo = 
       esperado: filasR.slice(0, 3).map(formatearFila).join(' ') + (filasR.length > 3 ? ' …' : ''),
     });
   }
+  // Consejo general del ejercicio cuando el resultado no coincide.
+  if (fallas.length && opciones.ayuda && !fallas.some((f) => f.ayuda)) fallas[0].ayuda = opciones.ayuda;
   return { ok: fallas.length === 0, fallas };
 }
 

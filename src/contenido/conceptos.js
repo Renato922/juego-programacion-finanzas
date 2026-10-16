@@ -67,6 +67,8 @@ export const CONCEPTOS = {
         solucion: 'cash = 5000\nprice = 37.5\nshares = cash // price',
         verificar: [{ tipo: 'variable', nombre: 'shares' }],
         pistas: ['Usa la división entera //.', 'shares = cash // price'],
+        explicacion:
+          '`cash // price` divide y descarta los decimales: 5000 / 37.5 = 133.33…, así que puedes comprar 133 acciones enteras. Como price tiene decimales, Python lo muestra como 133.0.\n\nCon una sola barra (`/`) obtendrías 133.33…, y no se puede comprar un tercio de acción.',
       },
     ],
   },
@@ -125,6 +127,8 @@ export const CONCEPTOS = {
           { tipo: 'codigoIncluye', patron: 'f"|f\'', mensaje: 'Usa un f-string: f"..."' },
         ],
         pistas: ['El formato de porcentaje es {variable:.1%}', 'print(f"Margen: {margin:.1%}")'],
+        explicacion:
+          'Dentro de las llaves, `:.1%` multiplica por 100, agrega el signo % y deja 1 decimal: 0.35 se muestra como 35.0%. La `f` antes de las comillas es la que activa las llaves.\n\nNo multipliques por 100 a mano: el formato `%` ya lo hace, y saldría 3500.0%.',
       },
     ],
   },
@@ -182,6 +186,8 @@ export const CONCEPTOS = {
           { tipo: 'variable', nombre: 'top' },
         ],
         pistas: ['prices.append(valor) agrega al final.', 'top = max(prices)'],
+        explicacion:
+          '`prices.append(101.4)` modifica la lista: le agrega 101.4 al final. Después, `max(prices)` recorre la lista ya actualizada y devuelve 101.4.\n\nEl orden importa: si calculas `top` antes del append, el máximo sería 100.1.',
       },
     ],
   },
@@ -242,6 +248,8 @@ export const CONCEPTOS = {
           { tipo: 'codigoIncluye', patron: '\\bfor\\b', mensaje: 'Usa un bucle for.' },
         ],
         pistas: ['Recorre i desde 1 hasta len(prices) - 1 con range(1, len(prices)).', 'returns.append(prices[i] / prices[i - 1] - 1)'],
+        explicacion:
+          '`range(1, len(prices))` recorre las posiciones 1 y 2: el primer precio no tiene anterior. En cada vuelta, `prices[i] / prices[i - 1] - 1` compara el precio con el anterior: 55 / 50 − 1 = 0.1 y 52.25 / 55 − 1 = −0.05.\n\nRestar (`prices[i] - prices[i - 1]`) daría la diferencia en dólares, no el retorno.',
       },
     ],
   },
@@ -314,6 +322,8 @@ export const CONCEPTOS = {
           },
         ],
         pistas: ['def net_return(gross, fee):', '    return gross - fee'],
+        explicacion:
+          'La función recibe `gross` y `fee` y **devuelve** la resta con `return`. El cuerpo va con 4 espacios de sangría.\n\nSi usaras `print` en lugar de `return`, la función mostraría el número pero devolvería None.',
       },
     ],
   },
@@ -346,6 +356,8 @@ export const CONCEPTOS = {
         solucion: 'positions = {"CND": 6506.0, "PAC": 3929.5, "BTP": 3168.9}\ntotal = sum(positions.values())',
         verificar: [{ tipo: 'variable', nombre: 'total' }],
         pistas: ['positions.values() entrega solo los valores.', 'total = sum(positions.values())'],
+        explicacion:
+          '`positions.values()` entrega solo los valores del diccionario (6506.0, 3929.5 y 3168.9) y `sum()` los suma: 13604.4.\n\n`sum(positions)` no sirve: recorrer un diccionario entrega sus claves, que son textos.',
       },
     ],
   },
@@ -373,6 +385,8 @@ export const CONCEPTOS = {
         solucion: 'SELECT name, risk_profile FROM clients;',
         opciones: {},
         pistas: ['SELECT columna1, columna2 FROM tabla;', 'SELECT name, risk_profile FROM clients;'],
+        explicacion:
+          '`SELECT name, risk_profile` pide las dos columnas, separadas por coma, y `FROM clients` indica la tabla. Sin WHERE, salen todos los clientes.',
       },
     ],
   },
@@ -425,6 +439,8 @@ export const CONCEPTOS = {
         solucion: 'SELECT trade_id, quantity FROM trades WHERE quantity > 400;',
         opciones: {},
         pistas: ['Usa WHERE quantity > 400', 'SELECT trade_id, quantity FROM trades WHERE quantity > 400;'],
+        explicacion:
+          '`WHERE quantity > 400` deja solo las operaciones con más de 400 unidades: son 7. Los números van sin comillas; las comillas son para textos.',
       },
       {
         tipo: 'completar',
@@ -486,6 +502,8 @@ export const CONCEPTOS = {
         solucion: "SELECT ROUND(AVG(close), 2) FROM prices WHERE ticker = 'QTZ';",
         opciones: { tol: 0.005 },
         pistas: ["Filtra con WHERE ticker = 'QTZ'", "SELECT ROUND(AVG(close), 2) FROM prices WHERE ticker = 'QTZ';"],
+        explicacion:
+          "`WHERE ticker = 'QTZ'` deja los 12 cierres de QTZ, `AVG(close)` los promedia y `ROUND(..., 2)` redondea: 97.81. El WHERE se aplica antes de calcular el promedio.",
       },
     ],
   },
@@ -511,6 +529,8 @@ export const CONCEPTOS = {
         solucion: 'SELECT country, COUNT(*) FROM assets GROUP BY country;',
         opciones: {},
         pistas: ['SELECT country, COUNT(*) FROM assets ...', 'Agrega GROUP BY country'],
+        explicacion:
+          '`GROUP BY country` forma un grupo por país y `COUNT(*)` cuenta los activos de cada uno: por ejemplo, Peru tiene 3.\n\nSin GROUP BY, `COUNT(*)` contaría toda la tabla en una sola fila.',
       },
     ],
   },
@@ -563,6 +583,8 @@ export const CONCEPTOS = {
         solucion: 'SELECT t.trade_id, a.sector FROM trades t JOIN assets a ON t.ticker = a.ticker;',
         opciones: {},
         pistas: ['FROM trades t JOIN assets a ON ...', 'ON t.ticker = a.ticker'],
+        explicacion:
+          '`JOIN assets a ON t.ticker = a.ticker` le pega a cada operación los datos de su activo, porque las dos tablas comparten la columna ticker. Así puedes pedir `a.sector` junto a `t.trade_id`.',
       },
     ],
   },

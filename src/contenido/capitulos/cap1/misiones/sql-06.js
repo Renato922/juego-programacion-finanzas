@@ -51,13 +51,28 @@ export default {
             patron: '\\bJOIN\\b',
             banderas: 'i',
             mensaje: 'Usa JOIN para unir trades con clients.',
+            ayuda: 'Une las tablas con FROM trades t JOIN clients c ON ...',
           },
         ],
+        ayuda: 'Une por la columna que comparten las dos tablas: ON t.client_id = c.client_id, y pide c.name para el nombre.',
       },
       pistas: [
         'Une trades y clients por client_id.',
         'FROM trades t JOIN clients c ON t.client_id = c.client_id',
         'SELECT t.trade_id, c.____, t.ticker FROM trades t JOIN clients c ON t.client_id = c.________;',
+      ],
+      explicacion:
+        '`FROM trades t JOIN clients c ON t.client_id = c.client_id` le pega a cada operación los datos del cliente que tiene el mismo client_id. Con los alias `t` y `c` indicas de qué tabla sale cada columna: `t.trade_id`, `c.name`, `t.ticker`.\n\nEl `ON` es clave: sin él, SQL combinaría cada operación con cada cliente (28 × 8 = 224 filas).',
+      alternativas: ['SELECT trades.trade_id, clients.name, trades.ticker FROM trades INNER JOIN clients ON trades.client_id = clients.client_id;'],
+      incorrectas: [
+        {
+          codigo: 'SELECT t.trade_id, c.name, t.ticker FROM trades t JOIN clients c;',
+          retro: 'ON t.client_id = c.client_id',
+        },
+        {
+          codigo: 'SELECT t.trade_id, c.name, t.ticker FROM trades t JOIN clients c ON t.trade_id = c.client_id;',
+          retro: 'la columna que comparten',
+        },
       ],
     },
     {
@@ -74,11 +89,27 @@ export default {
           abs: 0.01,
           rel: 1e-9,
         },
+        ayuda: 'Une trades con assets por ticker (ON t.ticker = a.ticker) y agrupa con GROUP BY a.sector.',
       },
       pistas: [
         'Primero el JOIN por ticker, luego GROUP BY a.sector.',
         'FROM trades t JOIN assets a ON t.ticker = a.ticker GROUP BY a.sector',
         'SELECT a.sector, SUM(t.quantity * t.price) AS total FROM trades t JOIN assets a ON t.ticker = a.ticker GROUP BY _________;',
+      ],
+      explicacion:
+        'Primero el `JOIN` le agrega a cada operación el sector de su activo; después `GROUP BY a.sector` forma un grupo por sector y `SUM(t.quantity * t.price)` suma los montos de cada grupo.\n\nEl orden de las cláusulas es FROM → JOIN … ON → GROUP BY. El JOIN hace falta porque sector está en assets y no en trades.',
+      alternativas: [
+        'SELECT a.sector, SUM(t.quantity * t.price) AS total FROM trades t JOIN assets a ON t.ticker = a.ticker GROUP BY a.sector ORDER BY total DESC;',
+      ],
+      incorrectas: [
+        {
+          codigo: 'SELECT a.sector, SUM(t.quantity * t.price) AS total FROM trades t JOIN assets a ON t.ticker = a.ticker;',
+          retro: 'GROUP BY a.sector',
+        },
+        {
+          codigo: 'SELECT a.sector, SUM(t.quantity * t.price) AS total FROM trades t JOIN assets a GROUP BY a.sector;',
+          retro: 'ON t.ticker = a.ticker',
+        },
       ],
     },
     {
@@ -108,13 +139,27 @@ export default {
       enunciado: 'Encuentra el `name` de los clientes que **no tienen ninguna operación**.',
       inicial: '',
       solucion: 'SELECT c.name FROM clients c LEFT JOIN trades t ON c.client_id = t.client_id WHERE t.trade_id IS NULL;',
-      opciones: {},
+      opciones: {
+        ayuda: 'Usa LEFT JOIN desde clients para conservar a todos los clientes, y quédate con los que no tienen pareja: WHERE t.trade_id IS NULL.',
+      },
       pistas: [
         'LEFT JOIN de clients hacia trades.',
         'Quédate con las filas donde t.trade_id IS NULL.',
         'SELECT c.name FROM clients c LEFT JOIN trades t ON c.client_id = t.client_id WHERE t.trade_id IS ____;',
       ],
       alternativas: ['SELECT name FROM clients WHERE client_id NOT IN (SELECT client_id FROM trades);'],
+      explicacion:
+        '`LEFT JOIN` conserva a **todos** los clientes, aunque no tengan operaciones; para quienes no tienen pareja en trades, las columnas de `t` quedan en NULL. `WHERE t.trade_id IS NULL` se queda justo con esas filas: Sofía Rojas.\n\nSe escribe `IS NULL` y no `= NULL`: en SQL, comparar con NULL usando `=` nunca da verdadero, así que no deja pasar ninguna fila. Y con un JOIN normal, los clientes sin operaciones ni siquiera aparecerían.',
+      incorrectas: [
+        {
+          codigo: 'SELECT c.name FROM clients c LEFT JOIN trades t ON c.client_id = t.client_id WHERE t.trade_id = NULL;',
+          retro: 'IS NULL',
+        },
+        {
+          codigo: 'SELECT c.name FROM clients c JOIN trades t ON c.client_id = t.client_id WHERE t.trade_id IS NULL;',
+          retro: 'LEFT JOIN',
+        },
+      ],
     },
     {
       tipo: 'dialogo',

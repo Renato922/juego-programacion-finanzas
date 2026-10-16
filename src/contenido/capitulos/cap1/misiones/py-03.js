@@ -33,7 +33,7 @@ export default {
       tipo: 'leccion',
       titulo: 'Listas',
       texto:
-        'Una **lista** guarda varios valores en orden: `[a, b, c]`. Las posiciones empiezan en **0**: `lista[0]` es el primero y `lista[-1]` el último.\n\n`len()` cuenta elementos; `sum()`, `max()` y `min()` hacen lo que dicen. `.append(x)` agrega al final.\n\nCon **slicing** tomas un tramo: `lista[1:3]` toma las posiciones 1 y 2 (la 3 no se incluye).',
+        'Una **lista** guarda varios valores en orden: `[a, b, c]`. Las posiciones empiezan en **0**: `lista[0]` es el primero y `lista[-1]` el último (los índices negativos cuentan desde el final: `-2` es el penúltimo).\n\n`len()` cuenta elementos; `sum()`, `max()` y `min()` hacen lo que dicen. `.append(x)` agrega al final.\n\nCon **slicing** tomas un tramo: `lista[1:3]` toma las posiciones 1 y 2 (la 3 no se incluye). La cantidad de elementos de un slice es fin − inicio: `lista[1:3]` toma 3 − 1 = 2.',
       codigo:
         'prices = [44.55, 48.11, 51.2, 54.48]\nprint(prices[0])      # 44.55\nprint(prices[-1])     # 54.48\nprint(len(prices))    # 4\nprint(prices[1:3])    # [48.11, 51.2]\nprices.append(54.63)\nprint(prices)',
       lenguaje: 'python',
@@ -62,14 +62,17 @@ export default {
         {
           tipo: 'variable',
           nombre: 'average_rate',
+          ayuda: 'El promedio es sum(tbill_rates) / len(tbill_rates). Usa len() en lugar de contar a mano: la lista tiene 8 trimestres.',
         },
         {
           tipo: 'variable',
           nombre: 'max_rate',
+          ayuda: 'max_rate = max(tbill_rates) devuelve el valor más alto de la lista.',
         },
         {
           tipo: 'variable',
           nombre: 'min_rate',
+          ayuda: 'min_rate = min(tbill_rates) devuelve el valor más bajo de la lista.',
         },
       ],
       pistas: [
@@ -78,7 +81,21 @@ export default {
         'max_rate = max(tbill_rates)\nmin_rate = ___(tbill_rates)',
       ],
       incorrectas: [
-        'tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\naverage_rate = sum(tbill_rates) / 7\nmax_rate = max(tbill_rates)\nmin_rate = min(tbill_rates)',
+        {
+          codigo:
+            'tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\naverage_rate = sum(tbill_rates) / 7\nmax_rate = max(tbill_rates)\nmin_rate = min(tbill_rates)',
+          retro: 'len(tbill_rates)',
+        },
+        {
+          codigo:
+            'tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\naverage_rate = sum(tbill_rates) / len(tbill_rates)\nmax_rate = min(tbill_rates)\nmin_rate = max(tbill_rates)',
+          retro: ['max_rate = max(tbill_rates)', 'min_rate = min(tbill_rates)'],
+        },
+      ],
+      explicacion:
+        'El promedio es la suma dividida entre la cantidad: `sum(tbill_rates) / len(tbill_rates)` da 8.12 / 8 = 1.015. `max()` y `min()` devuelven el valor más alto (3.01) y el más bajo (0.12) de la lista.\n\nUsar `len()` en vez de escribir el 8 a mano evita contar mal (dividir entre 7 infla el promedio) y sigue funcionando si la lista cambia.',
+      alternativas: [
+        'tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\naverage_rate = sum(tbill_rates) / 8\nmax_rate = max(tbill_rates)\nmin_rate = min(tbill_rates)',
       ],
     },
     {
@@ -94,6 +111,7 @@ export default {
         {
           tipo: 'variable',
           nombre: 'rate_drop',
+          ayuda: 'Resta el primero menos el último: tbill_rates[0] - tbill_rates[-1]. Si te salió negativo, invertiste el orden.',
         },
         {
           tipo: 'codigoIncluye',
@@ -101,8 +119,24 @@ export default {
           mensaje: 'Usa índices, por ejemplo tbill_rates[0].',
         },
       ],
-      pistas: ['El primero es tbill_rates[0]. ¿Y el último?', 'El último es tbill_rates[-1].', 'rate_drop = tbill_rates[0] - tbill_rates[__]'],
+      pistas: ['El primero es tbill_rates[0]. ¿Y el último?', 'El último es tbill_rates[-1].', 'rate_drop = tbill_rates[0] - tbill_rates[___]'],
       alternativas: ['tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\nrate_drop = tbill_rates[0] - tbill_rates[len(tbill_rates) - 1]'],
+      explicacion:
+        '`tbill_rates[0]` es el primer trimestre (3.01) y `tbill_rates[-1]` el último (0.12). Restarlos da `rate_drop` ≈ 2.89 puntos porcentuales. Python puede mostrar 2.8899999999999997: es la forma en que la computadora guarda los decimales, no un error.\n\nEl índice `-1` siempre apunta al último elemento, sin importar el largo de la lista. El error típico es `tbill_rates[8]`: con 8 elementos las posiciones van de 0 a 7, así que da IndexError.',
+      incorrectas: [
+        {
+          codigo: 'tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\nrate_drop = tbill_rates[-1] - tbill_rates[0]',
+          retro: 'invertiste el orden',
+        },
+        {
+          codigo: 'tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\nrate_drop = tbill_rates[0] - tbill_rates[8]',
+          retro: 'lista[-1] es el último',
+        },
+        {
+          codigo: 'tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\nrate_drop = 3.01 - 0.12',
+          retro: 'Usa índices',
+        },
+      ],
     },
     {
       tipo: 'ejercicio',
@@ -117,10 +151,12 @@ export default {
         {
           tipo: 'variable',
           nombre: 'rates_2008',
+          ayuda: 'Un slice [inicio:fin] no incluye la posición fin. Para tomar las posiciones 1 a 4 escribe tbill_rates[1:5] (5 − 1 = 4 elementos).',
         },
         {
           tipo: 'variable',
           nombre: 'avg_2008',
+          ayuda: 'Promedio de los 4 valores: sum(rates_2008) / len(rates_2008). Si rates_2008 tiene ✘, corrígela primero.',
         },
         {
           tipo: 'codigoIncluye',
@@ -134,7 +170,19 @@ export default {
         'avg_2008 = sum(rates_2008) / ___(rates_2008)',
       ],
       incorrectas: [
-        'tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\nrates_2008 = tbill_rates[1:4]\navg_2008 = sum(rates_2008) / len(rates_2008)',
+        {
+          codigo: 'tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\nrates_2008 = tbill_rates[1:4]\navg_2008 = sum(rates_2008) / len(rates_2008)',
+          retro: 'tbill_rates[1:5]',
+        },
+        {
+          codigo: 'tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\nrates_2008 = tbill_rates[0:4]\navg_2008 = sum(rates_2008) / len(rates_2008)',
+          retro: 'no incluye la posición fin',
+        },
+      ],
+      explicacion:
+        '`tbill_rates[1:5]` toma las posiciones 1, 2, 3 y 4: el final del slice (5) **no se incluye**, por eso para llegar hasta la posición 4 se escribe 5. El resultado es `[1.56, 1.74, 1.17, 0.12]` y su promedio, `sum(rates_2008) / len(rates_2008)`, es 1.1475.\n\nEl error típico es `tbill_rates[1:4]`, que deja fuera el 4.º trimestre de 2008 y toma solo 3 valores.',
+      alternativas: [
+        'tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\nrates_2008 = tbill_rates[1:-3]\navg_2008 = sum(rates_2008) / len(rates_2008)',
       ],
     },
     {

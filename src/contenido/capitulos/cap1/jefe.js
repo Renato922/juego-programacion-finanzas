@@ -41,8 +41,19 @@ export const JEFE_CAP1 = {
         enunciado: 'Cuadre de caja: muestra cada `side` (buy / sell) y el monto total `SUM(quantity * price)` con el nombre `total_amount`.',
         inicial: '',
         solucion: 'SELECT side, SUM(quantity * price) AS total_amount FROM trades GROUP BY side;',
-        opciones: { nombresColumnas: true, tol: { abs: 0.01, rel: 1e-9 } },
+        opciones: {
+          nombresColumnas: true,
+          tol: { abs: 0.01, rel: 1e-9 },
+          ayuda: 'Una fila por cada side: agrupa con GROUP BY side y nombra la suma con AS total_amount.',
+        },
         pistas: ['Es un GROUP BY por side.', 'SELECT side, SUM(quantity * price) AS total_amount FROM trades ...', '... GROUP BY ____;'],
+        explicacion:
+          '`GROUP BY side` forma dos grupos, compras y ventas, y `SUM(quantity * price)` suma los montos de cada uno: 559231.8 en compras y 36854.75 en ventas. `AS total_amount` le da a la columna el nombre pedido.\n\n' +
+          'Es la misma idea de la misión "Agrupar por sector", con otra columna de grupo.',
+        incorrectas: [
+          { codigo: 'SELECT side, SUM(quantity * price) AS total_amount FROM trades;', retro: 'GROUP BY side' },
+          { codigo: 'SELECT side, SUM(quantity * price) FROM trades GROUP BY side;', retro: 'total_amount' },
+        ],
       },
     },
     {
@@ -59,7 +70,26 @@ export const JEFE_CAP1 = {
         inicial: '',
         solucion:
           'SELECT c.name, SUM(t.quantity * t.price) AS traded FROM trades t JOIN clients c ON t.client_id = c.client_id GROUP BY c.name ORDER BY traded DESC LIMIT 3;',
-        opciones: { ordenImporta: true, tol: { abs: 0.01, rel: 1e-9 } },
+        opciones: {
+          ordenImporta: true,
+          tol: { abs: 0.01, rel: 1e-9 },
+          ayuda: 'Orden de las cláusulas: JOIN … ON, GROUP BY c.name, ORDER BY traded DESC y LIMIT 3 al final.',
+        },
+        explicacion:
+          'El JOIN trae el nombre de cada cliente; `GROUP BY c.name` suma lo negociado por cliente; `ORDER BY traded DESC` pone primero los montos más altos y `LIMIT 3` deja los tres primeros: Pensiones del Sur, Fundación Andina e Inversiones Ríos SAC.\n\n' +
+          'Las cláusulas van siempre en este orden: FROM → JOIN … ON → GROUP BY → ORDER BY → LIMIT. Sin `DESC` obtendrías los 3 clientes que **menos** negociaron.',
+        incorrectas: [
+          {
+            codigo:
+              'SELECT c.name, SUM(t.quantity * t.price) AS traded FROM trades t JOIN clients c ON t.client_id = c.client_id GROUP BY c.name ORDER BY traded LIMIT 3;',
+            retro: 'DESC',
+          },
+          {
+            codigo:
+              'SELECT c.name, SUM(t.quantity * t.price) AS traded FROM trades t JOIN clients c ON t.client_id = c.client_id GROUP BY c.name ORDER BY traded DESC;',
+            retro: 'LIMIT 3',
+          },
+        ],
         pistas: [
           'Necesitas JOIN, GROUP BY, ORDER BY y LIMIT, en ese orden.',
           'FROM trades t JOIN clients c ON t.client_id = c.client_id GROUP BY c.name',
@@ -77,7 +107,8 @@ export const JEFE_CAP1 = {
         pregunta: 'Un cliente quiere duplicar su dinero en 6 años. Según la regla del 72, ¿qué rendimiento anual necesita?',
         opciones: ['6%', '12%', '72%', '8%'],
         correcta: 1,
-        explicacion: '72 / 6 = 12% anual.',
+        explicacion:
+          'La regla del 72 estima los años para duplicar como 72 / tasa. Al revés, la tasa necesaria es 72 / años: 72 / 6 = 12% anual. Es una aproximación: al 12% exacto, el dinero se duplica en unos 6.1 años. 6% es la trampa: con esa tasa tardarías 72 / 6 = 12 años.',
       },
     },
     {
@@ -103,8 +134,35 @@ export const JEFE_CAP1 = {
               [10, 10, 50],
             ],
             tol: 1e-6,
+            ayuda:
+              'La ganancia es (precio actual − precio de compra) × cantidad: (current_price - buy_price) * quantity. Si te sale con el signo al revés, invertiste la resta.',
           },
-          { tipo: 'funcion', nombre: 'position_status', casos: [[2051.0], [-776.0], [0]] },
+          {
+            tipo: 'funcion',
+            nombre: 'position_status',
+            casos: [[2051.0], [-776.0], [0]],
+            ayuda: 'Tres casos, cada uno con su return: "profit" si pnl > 0, "loss" si pnl < 0 y "flat" en el else (cuando pnl es 0).',
+          },
+        ],
+        explicacion:
+          '`position_pnl` resta el precio de compra al precio actual y multiplica por la cantidad: para CND, (65.06 − 44.55) × 100 = 2051. `position_status` usa `if / elif / else` para elegir una de tres respuestas y la **devuelve** con `return`.\n\n' +
+          'Son dos funciones independientes, cada una con su propio `def` y su bloque con sangría. El error típico es invertir la resta (compra − actual), que cambia el signo de todas las ganancias.',
+        incorrectas: [
+          {
+            codigo:
+              'def position_pnl(buy_price, current_price, quantity):\n    return (buy_price - current_price) * quantity\n\ndef position_status(pnl):\n    if pnl > 0:\n        return "profit"\n    elif pnl < 0:\n        return "loss"\n    else:\n        return "flat"',
+            retro: 'invertiste la resta',
+          },
+          {
+            codigo:
+              'def position_pnl(buy_price, current_price, quantity):\n    return (current_price - buy_price) * quantity\n\ndef position_status(pnl):\n    if pnl >= 0:\n        return "profit"\n    else:\n        return "loss"',
+            retro: '"flat" en el else',
+          },
+          {
+            codigo:
+              'def position_pnl(buy_price, current_price, quantity):\n    print((current_price - buy_price) * quantity)\n\ndef position_status(pnl):\n    if pnl > 0:\n        return "profit"\n    elif pnl < 0:\n        return "loss"\n    else:\n        return "flat"',
+            retro: '¿Te falta el return?',
+          },
         ],
         pistas: [
           'La primera es una resta multiplicada por la cantidad. La segunda necesita if / elif / else.',
@@ -122,14 +180,37 @@ export const JEFE_CAP1 = {
         concepto: 'py.diccionarios',
         lenguaje: 'python',
         enunciado:
-          '`positions` guarda `ticker: (precio_de_compra, cantidad)`. Calcula `total_pnl` (la suma de ganancias y pérdidas de todas las posiciones) y `losers`: la lista de tickers en pérdida, **ordenada alfabéticamente** con `sorted()`.',
+          '`positions` guarda `ticker: (precio_de_compra, cantidad)`. Cada valor es una **tupla**: varios datos juntos entre paréntesis. En un bucle puedes desarmarla directamente: `for ticker, (buy_price, qty) in positions.items():` guarda la clave en `ticker` y los dos datos de la tupla en `buy_price` y `qty`.\n\n' +
+          'Calcula `total_pnl` (la suma de ganancias y pérdidas de todas las posiciones; el precio actual de cada ticker está en `current_prices`) y `losers`: la lista de tickers en pérdida, **ordenada alfabéticamente**. `sorted(lista)` devuelve una copia ordenada: `sorted(["b", "a"])` da `["a", "b"]`.',
         inicial: POSICIONES + '\ntotal_pnl = 0\nlosers = []\n',
         solucion:
           POSICIONES +
           '\ntotal_pnl = 0\nlosers = []\nfor ticker, (buy_price, qty) in positions.items():\n    pnl = (current_prices[ticker] - buy_price) * qty\n    total_pnl = total_pnl + pnl\n    if pnl < 0:\n        losers.append(ticker)\nlosers = sorted(losers)\nprint(total_pnl, losers)',
         verificar: [
-          { tipo: 'variable', nombre: 'total_pnl', tol: 1e-6 },
-          { tipo: 'variable', nombre: 'losers' },
+          {
+            tipo: 'variable',
+            nombre: 'total_pnl',
+            tol: 1e-6,
+            ayuda: 'Dentro del bucle calcula pnl = (current_prices[ticker] - buy_price) * qty y acumúlalo: total_pnl = total_pnl + pnl.',
+          },
+          { tipo: 'variable', nombre: 'losers', ayuda: 'Agrega el ticker cuando pnl < 0 y, después del bucle, ordénala: losers = sorted(losers).' },
+        ],
+        explicacion:
+          "El bucle desarma cada tupla en `buy_price` y `qty` y calcula `pnl = (current_prices[ticker] - buy_price) * qty`. Ese `pnl` se suma a `total_pnl` y, si es negativo, el ticker se agrega a `losers`. Al final, `sorted(losers)` los ordena: `['CAF', 'LLM', 'QTZ']`. En total, la cartera gana 4552.\n\n" +
+          'El error típico es olvidar `sorted()`: la lista quedaría en el orden del diccionario (LLM, QTZ, CAF).',
+        incorrectas: [
+          {
+            codigo:
+              POSICIONES +
+              '\ntotal_pnl = 0\nlosers = []\nfor ticker, (buy_price, qty) in positions.items():\n    pnl = (current_prices[ticker] - buy_price) * qty\n    total_pnl = total_pnl + pnl\n    if pnl < 0:\n        losers.append(ticker)',
+            retro: 'losers = sorted(losers)',
+          },
+          {
+            codigo:
+              POSICIONES +
+              '\ntotal_pnl = 0\nlosers = []\nfor ticker, (buy_price, qty) in positions.items():\n    pnl = (current_prices[ticker] - buy_price) * qty\n    total_pnl = pnl\n    if pnl < 0:\n        losers.append(ticker)\nlosers = sorted(losers)',
+            retro: 'total_pnl = total_pnl + pnl',
+          },
         ],
         pistas: [
           'Recorre positions.items(). Cada valor es una tupla: se puede desarmar con buy_price, qty = valor.',
@@ -156,8 +237,28 @@ export const JEFE_CAP1 = {
         solucion:
           'fund_value = 2500000\nexpected_return = 0.07\nyears = 5\nprojection = fund_value * (1 + expected_return) ** years\nprint(f"Proyección a 5 años: ${projection:,.2f}")',
         verificar: [
-          { tipo: 'salida', modo: 'exacta' },
+          {
+            tipo: 'salida',
+            modo: 'exacta',
+            ayuda: 'Dentro de las llaves del f-string va la variable con su formato: {projection:,.2f}. El signo $ va antes de las llaves, como texto normal.',
+          },
           { tipo: 'codigoIncluye', patron: '\\*\\*|pow\\(', mensaje: 'Calcula la proyección con la fórmula, no escribas el número a mano.' },
+        ],
+        explicacion:
+          'Primero el valor futuro: `projection = fund_value * (1 + expected_return) ** years` ≈ 3506379.33. Después, el f-string lo presenta: dentro de `{projection:,.2f}`, la `,` agrega separadores de miles y `.2f` deja 2 decimales. El `$` va fuera de las llaves, como texto normal.\n\n' +
+          'El texto tiene que coincidir exactamente, incluida la tilde de "Proyección" y los espacios.',
+        incorrectas: [
+          {
+            codigo:
+              'fund_value = 2500000\nexpected_return = 0.07\nyears = 5\nprojection = fund_value * (1 + expected_return) ** years\nprint(f"Proyección a 5 años: ${projection:.2f}")',
+            retro: '{projection:,.2f}',
+          },
+          {
+            codigo:
+              'fund_value = 2500000\nexpected_return = 0.07\nyears = 5\nprojection = fund_value * (1 + expected_return) ** years\nprint("Proyección a 5 años: ${projection:,.2f}")',
+            retro: '{projection:,.2f}',
+          },
+          { codigo: 'print("Proyección a 5 años: $3,506,379.33")', retro: 'con la fórmula' },
         ],
         pistas: [
           'Primero el valor futuro: fund_value * (1 + expected_return) ** years',

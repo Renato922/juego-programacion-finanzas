@@ -267,7 +267,13 @@ function renderEjercicio(paso, ctx, { alCompletar, borrador, alCambiarBorrador, 
               resuelto = true;
               llenar(
                 retro,
-                h('div.retro.mal', {}, h('div.titulo.ambar-t', {}, 'Así se resolvía'), bloqueExplicacion(), h('button.primario', { onclick: () => terminar(false) }, 'Continuar ▸')),
+                h(
+                  'div.retro.mal',
+                  {},
+                  h('div.titulo.ambar-t', {}, 'Así se resolvía'),
+                  bloqueExplicacion(),
+                  h('button.primario', { onclick: () => terminar(false) }, 'Continuar ▸'),
+                ),
               );
               ocupado(true);
             },

@@ -29,7 +29,7 @@ export default {
       tipo: 'leccion',
       titulo: 'Funciones: def y return',
       texto:
-        'Una **función** empaqueta un cálculo. Se define con `def nombre(parámetros):` y devuelve el resultado con `return`.\n\nLos parámetros pueden tener **valor por defecto**: `def fee(amount, rate=0.01)` usa 0.01 si no le pasas rate.',
+        'Una **función** empaqueta un cálculo. Se define con `def nombre(parámetros):` y devuelve el resultado con `return`.\n\nLos parámetros pueden tener **valor por defecto**: `def fee(amount, rate=0.01)` usa 0.01 si no le pasas rate.\n\nEl cuerpo de la función va con 4 espacios de sangría. `return` **devuelve** el resultado a quien llamó la función, para que puedas guardarlo o usarlo en otro cálculo; `print` solo lo muestra en la consola, y una función sin `return` devuelve `None`.\n\nDefinir la función no la ejecuta: se ejecuta cada vez que la llamas, por ejemplo `future_value(1000, 0.07, 5)`.',
       codigo:
         'def future_value(pv, rate, years):\n    return pv * (1 + rate) ** years\n\nprint(future_value(1000, 0.07, 5))   # 1402.55...\nprint(future_value(500, 0.1, 2))     # 605.0...',
       lenguaje: 'python',
@@ -67,6 +67,8 @@ export default {
             rel: 1e-9,
             abs: 1e-9,
           },
+          ayuda:
+            'El valor presente divide entre (1 + rate) ** years (multiplicar daría el valor futuro), y la función tiene que devolverlo con return, no solo imprimirlo.',
         },
       ],
       pistas: [
@@ -75,15 +77,24 @@ export default {
         'def present_value(fv, rate, years):\n    return fv / (1 + ____) ** _____',
       ],
       incorrectas: [
-        'def present_value(fv, rate, years):\n    print(fv / (1 + rate) ** years)',
-        'def present_value(fv, rate, years):\n    return fv * (1 + rate) ** years',
+        {
+          codigo: 'def present_value(fv, rate, years):\n    print(fv / (1 + rate) ** years)',
+          retro: ['devolvió None', 'return'],
+        },
+        {
+          codigo: 'def present_value(fv, rate, years):\n    return fv * (1 + rate) ** years',
+          retro: 'multiplicar daría el valor futuro',
+        },
       ],
+      explicacion:
+        'La función recibe `fv`, `rate` y `years` y **devuelve** `fv / (1 + rate) ** years`. Con 1000 a 10% por 1 año: 1000 / 1.1 = 909.09.\n\nPython calcula primero la potencia `**` y después la división, así que no hacen falta más paréntesis. El error típico es usar `print` en lugar de `return`: la función mostraría el número, pero devolvería `None` y no podrías usar el resultado en otro cálculo.',
+      alternativas: ['def present_value(fv, rate, years):\n    return fv * (1 + rate) ** -years'],
     },
     {
       tipo: 'leccion',
       titulo: 'La cuota de un préstamo',
       texto:
-        'En un préstamo de cuota fija (sistema francés, el más usado en hipotecas y créditos de consumo), la cuota mensual es:\n\n`cuota = P × r / (1 − (1 + r) ** −n)`\n\ndonde P es el monto prestado, r la tasa **mensual** y n el número de meses. Si r es 0, la fórmula divide entre cero: en ese caso la cuota es simplemente `P / n`.',
+        'En un préstamo de cuota fija (sistema francés, el más usado en hipotecas y créditos de consumo), la cuota mensual es:\n\n`cuota = P × r / (1 − (1 + r) ** −n)`\n\ndonde P es el monto prestado, r la tasa **mensual** y n el número de meses. `(1 + r) ** -n` es lo mismo que `1 / (1 + r) ** n`: un exponente negativo significa "uno dividido entre". Con r = 0.01 y n = 12 vale ≈ 0.8874. Si r es 0, la fórmula divide entre cero: en ese caso la cuota es simplemente `P / n`.',
       codigo: 'P, r, n = 10000, 0.01, 12\npayment = P * r / (1 - (1 + r) ** -n)\nprint(round(payment, 2))   # 888.49',
       lenguaje: 'python',
     },
@@ -110,6 +121,8 @@ export default {
             rel: 1e-9,
             abs: 1e-9,
           },
+          ayuda:
+            'Dos detalles: (1) si monthly_rate es 0 la fórmula divide entre cero; antes, con if monthly_rate == 0:, devuelve principal / months. (2) El exponente es negativo: (1 + monthly_rate) ** -months.',
         },
       ],
       pistas: [
@@ -117,7 +130,22 @@ export default {
         'return principal * monthly_rate / (1 - (1 + monthly_rate) ** -months)',
         'def loan_payment(principal, monthly_rate, months):\n    if monthly_rate == 0:\n        return principal / ______\n    return principal * monthly_rate / (1 - (1 + monthly_rate) ** -______)',
       ],
-      incorrectas: ['def loan_payment(principal, monthly_rate, months):\n    return principal * monthly_rate / (1 - (1 + monthly_rate) ** -months)'],
+      incorrectas: [
+        {
+          codigo: 'def loan_payment(principal, monthly_rate, months):\n    return principal * monthly_rate / (1 - (1 + monthly_rate) ** -months)',
+          retro: ['divide entre cero', 'if monthly_rate == 0'],
+        },
+        {
+          codigo:
+            'def loan_payment(principal, monthly_rate, months):\n    if monthly_rate == 0:\n        return principal / months\n    return principal * monthly_rate / (1 - (1 + monthly_rate) ** months)',
+          retro: '** -months',
+        },
+      ],
+      explicacion:
+        'Primero el caso especial: si `monthly_rate == 0`, la fórmula dividiría entre cero, así que devuelves `principal / months` (sin intereses, la cuota es el monto repartido en partes iguales). Si no, devuelves `principal * monthly_rate / (1 - (1 + monthly_rate) ** -months)`. Para 10000 al 1% mensual en 12 meses, la cuota es ≈ 888.49.\n\nEl `return` dentro del `if` termina la función ahí mismo, por eso no hace falta un `else`. Se compara con `==`: un solo `=` es una asignación y da error de sintaxis.',
+      alternativas: [
+        'def loan_payment(principal, monthly_rate, months):\n    if monthly_rate == 0:\n        return principal / months\n    else:\n        return principal * monthly_rate / (1 - 1 / (1 + monthly_rate) ** months)',
+      ],
     },
     {
       tipo: 'ejercicio',
@@ -136,14 +164,27 @@ export default {
             [1000, 0.05, 3],
             [2500, 0.1, 2],
           ],
+          ayuda:
+            'El valor por defecto va en la definición: def simple_interest(capital, rate, years=1):, y el return multiplica los tres: capital * rate * years.',
         },
       ],
       pistas: [
-        'El valor por defecto se escribe en la definición: years=1',
-        'def simple_interest(capital, rate, years=1):',
-        '    return capital * rate * _____',
+        'El valor por defecto se escribe en la definición, con =: years=1',
+        'La primera línea es def simple_interest(capital, rate, years=1):  y la segunda, con 4 espacios, el return.',
+        'def simple_interest(capital, rate, years=___):\n    return capital * rate * _____',
       ],
-      incorrectas: ['def simple_interest(capital, rate, years):\n    return capital * rate * years'],
+      incorrectas: [
+        {
+          codigo: 'def simple_interest(capital, rate, years):\n    return capital * rate * years',
+          retro: ['menos argumentos', 'years=1'],
+        },
+        {
+          codigo: 'def simple_interest(capital, rate, years=1):\n    return capital * rate',
+          retro: 'capital * rate * years',
+        },
+      ],
+      explicacion:
+        'Al escribir `years=1` en la definición, `years` pasa a ser opcional: `simple_interest(1000, 0.05)` usa 1 año y da 50.0, y `simple_interest(1000, 0.05, 3)` da 150.0.\n\nSin el `=1`, llamar a la función con dos argumentos da `TypeError` porque falta `years`. Los parámetros con valor por defecto van siempre al final de la lista.',
     },
     {
       tipo: 'dialogo',

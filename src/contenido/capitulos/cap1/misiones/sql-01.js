@@ -47,13 +47,30 @@ export default {
       enunciado: 'Muestra el `ticker`, el `name` y el `country` de todos los activos (tabla `assets`).',
       inicial: '',
       solucion: 'SELECT ticker, name, country FROM assets;',
-      opciones: {},
+      opciones: {
+        ayuda: 'Pide exactamente tres columnas, separadas por comas: ticker, name y country, de la tabla assets.',
+      },
       pistas: [
         'La estructura es SELECT columnas FROM tabla;',
         'Separa las columnas con comas: SELECT ticker, name, country ...',
         'SELECT ticker, name, country FROM ______;',
       ],
-      incorrectas: ['SELECT * FROM assets;', 'SELECT ticker, name FROM assets;'],
+      incorrectas: [
+        {
+          codigo: 'SELECT * FROM assets;',
+          retro: 'se esperaban 3',
+        },
+        {
+          codigo: 'SELECT ticker, name FROM assets;',
+          retro: 'ticker, name, country',
+        },
+        {
+          codigo: 'SELECT ticker name, country FROM assets;',
+          retro: 'separadas por comas',
+        },
+      ],
+      explicacion:
+        '`SELECT` lista las columnas que quieres, separadas por comas, y `FROM` indica la tabla: `SELECT ticker, name, country FROM assets;`. Las columnas salen en el orden en que las escribes.\n\n`SELECT *` traería **todas** las columnas de assets, no solo las tres pedidas. Y ojo con las comas: `SELECT ticker name` no da error, porque SQL lo lee como la columna ticker renombrada como name.',
     },
     {
       tipo: 'quiz',
@@ -84,13 +101,26 @@ export default {
       solucion: 'SELECT trade_id, ticker, quantity * price AS amount FROM trades;',
       opciones: {
         nombresColumnas: true,
+        ayuda: 'El monto es quantity * price (multiplicar), y la columna se nombra con AS: quantity * price AS amount.',
       },
       pistas: [
         'El monto es quantity * price.',
         'Para nombrar la columna: quantity * price AS amount',
         'SELECT trade_id, ticker, quantity * price AS ______ FROM trades;',
       ],
-      incorrectas: ['SELECT trade_id, ticker, quantity * price FROM trades;'],
+      incorrectas: [
+        {
+          codigo: 'SELECT trade_id, ticker, quantity * price FROM trades;',
+          retro: 'Usa AS',
+        },
+        {
+          codigo: 'SELECT trade_id, ticker, quantity + price AS amount FROM trades;',
+          retro: 'multiplicar',
+        },
+      ],
+      explicacion:
+        '`quantity * price` calcula el monto fila por fila, y `AS amount` le da ese nombre a la columna del resultado. Sin `AS`, la columna se llamaría literalmente `quantity * price`.\n\nEl alias solo existe en el resultado de la consulta: la tabla `trades` no cambia.',
+      alternativas: ['SELECT trade_id, ticker, price * quantity AS amount FROM trades;'],
     },
     {
       tipo: 'ejercicio',
@@ -102,8 +132,22 @@ export default {
         'Datos reales: muestra `year`, `quarter` y `unemp` (tasa de desempleo de EE. UU., en %) de la tabla `us_macro`. Son 203 trimestres, de 1959 a 2009.',
       inicial: '',
       solucion: 'SELECT year, quarter, unemp FROM us_macro;',
-      opciones: {},
-      pistas: ['Igual que antes, pero con la tabla us_macro.', 'SELECT year, quarter, unemp FROM ...;'],
+      opciones: {
+        ayuda: 'Pide las tres columnas de la tabla us_macro, separadas por comas: year, quarter y unemp.',
+      },
+      pistas: ['Igual que antes, pero con la tabla us_macro.', 'SELECT year, quarter, unemp FROM ...;', 'SELECT year, quarter, unemp FROM ________;'],
+      explicacion:
+        'Es la misma estructura con otra tabla: `SELECT year, quarter, unemp FROM us_macro;`. Cada fila es un trimestre, por eso el resultado tiene 203 filas.\n\n`us_macro` tiene más columnas (inflación, tasas y otras), pero conviene pedir solo las que necesitas.',
+      incorrectas: [
+        {
+          codigo: 'SELECT * FROM us_macro;',
+          retro: 'se esperaban 3',
+        },
+        {
+          codigo: 'SELECT year, unemp FROM us_macro;',
+          retro: 'year, quarter, unemp',
+        },
+      ],
     },
     {
       tipo: 'dialogo',
