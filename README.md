@@ -38,7 +38,7 @@ Notas:
 ```bash
 npm run dist
 ```
-Genera en `dist/` un **instalador** (`CondorCapital-0.1.0-x64.exe`, con acceso directo en el escritorio) y una **versión portable**.
+Genera en `dist/` un **instalador** (`CondorCapital-Instalador-0.1.0.exe`, con acceso directo en el escritorio) y una **versión portable** (`CondorCapital-Portable-0.1.0.exe`, se abre con doble clic, sin instalar).
 
 Windows puede mostrar "Windows protegió su PC" porque el ejecutable no está firmado digitalmente (firmar cuesta dinero). Haz clic en *Más información → Ejecutar de todas formas*.
 

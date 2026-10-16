@@ -52,8 +52,11 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "Cóndor Capital"
+      "shortcutName": "Cóndor Capital",
+      "artifactName": "CondorCapital-Instalador-${version}.${ext}"
     },
-    "artifactName": "CondorCapital-${version}-${arch}.${ext}"
+    "portable": {
+      "artifactName": "CondorCapital-Portable-${version}.${ext}"
+    }
   }
 }
