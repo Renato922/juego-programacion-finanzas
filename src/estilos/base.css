@@ -1046,3 +1046,28 @@ input[type='checkbox'] {
 .linea-error {
   background: rgba(255, 138, 138, 0.15);
 }
+
+/* Explicación de la solución y lista de verificaciones */
+details.explicacion {
+  margin: 10px 0;
+  border-left: 4px solid var(--acento);
+  background: var(--panel-2);
+  padding: 8px 12px;
+}
+details.explicacion summary {
+  cursor: pointer;
+  font-family: var(--fuente-titulo);
+  font-size: 11px;
+  color: var(--acento);
+  margin-bottom: 6px;
+}
+details.explicacion pre {
+  margin: 6px 0;
+}
+ul.verificaciones {
+  list-style: none;
+  padding-left: 0;
+}
+ul.verificaciones li {
+  margin: 4px 0;
+}

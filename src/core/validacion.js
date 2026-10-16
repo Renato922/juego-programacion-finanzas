@@ -181,20 +181,31 @@ function extraerNumeros(txt) {
   return (txt.match(/-?\d[\d,]*\.?\d*(e-?\d+)?/gi) ?? []).map((s) => Number(s.replace(/,/g, '')));
 }
 
+const AYUDA_SIN_SALIDA =
+  'Tu código no mostró nada en la consola. print() muestra lo que pongas dentro de los paréntesis: por ejemplo print(total) muestra el valor de la variable total. Un print() vacío solo imprime una línea en blanco.';
+
+function recortarTexto(txt, max = 160) {
+  const t = txt.replace(/\n/g, ' ⏎ ');
+  return t.length > max ? t.slice(0, max - 1) + '…' : t;
+}
+
 function verificarSalida(v, salidaUsuario, salidaReferencia) {
   const esperada = normalizarSalida(v.texto ?? salidaReferencia);
   const obtenida = normalizarSalida(salidaUsuario);
+  const sinSalida = !obtenida.trim();
   const modo = v.modo ?? 'exacta';
   if (modo === 'exacta') {
     if (esperada === obtenida) return null;
-    if (!obtenida) return { mensaje: 'Tu código no imprimió nada. Usa print() para mostrar el resultado.', esperado: esperada };
+    if (sinSalida) return { mensaje: AYUDA_SIN_SALIDA, esperado: esperada };
     if (esperada.toLowerCase() === obtenida.toLowerCase()) return { mensaje: 'Casi: revisa mayúsculas y minúsculas en lo que imprimes.', esperado: esperada };
-    return { mensaje: 'Lo que imprimes no coincide con lo esperado.', esperado: esperada };
+    if (esperada.replace(/\s+/g, '') === obtenida.replace(/\s+/g, '')) return { mensaje: 'Casi: el texto es correcto pero sobran o faltan espacios.', esperado: esperada };
+    return { mensaje: `Lo que imprimes no coincide con lo esperado. Tu código imprimió: «${recortarTexto(obtenida)}»`, esperado: esperada };
   }
   if (modo === 'contiene') {
     for (const linea of esperada.split('\n')) {
       if (linea && !obtenida.includes(linea.trim())) {
-        return { mensaje: `Tu salida no incluye: "${linea.trim()}"`, esperado: esperada };
+        if (sinSalida) return { mensaje: AYUDA_SIN_SALIDA, esperado: esperada };
+        return { mensaje: `Lo que imprimes no incluye "${linea.trim()}". Tu código imprimió: «${recortarTexto(obtenida)}»`, esperado: esperada };
       }
     }
     return null;
@@ -204,7 +215,8 @@ function verificarSalida(v, salidaUsuario, salidaReferencia) {
     const b = extraerNumeros(obtenida);
     const tol = normalizarTolerancia(v.tol ?? { abs: 0.01, rel: 1e-6 });
     if (a.length !== b.length || a.some((x, i) => !numerosIguales(x, b[i], tol))) {
-      return { mensaje: 'Los números que imprimes no coinciden con lo esperado.', esperado: esperada };
+      if (sinSalida) return { mensaje: AYUDA_SIN_SALIDA, esperado: esperada };
+      return { mensaje: `Los números que imprimes no coinciden con lo esperado. Tu código imprimió: «${recortarTexto(obtenida)}»`, esperado: esperada };
     }
     return null;
   }
@@ -229,19 +241,33 @@ export function quitarComentarios(codigo, lenguaje) {
     .join('\n');
 }
 
-// Resultado: { ok, fallas: [{ mensaje, esperado? }], error? }
+// Nombre legible de cada verificación, para mostrar una lista ✔/✘.
+export function etiquetaVerificacion(v) {
+  if (v.etiqueta) return v.etiqueta;
+  if (v.tipo === 'variable') return `la variable ${v.nombre}`;
+  if (v.tipo === 'expresion') return v.descripcion ?? v.codigo;
+  if (v.tipo === 'funcion') return `la función ${v.nombre}`;
+  if (v.tipo === 'salida') return 'lo que imprimes con print()';
+  return 'cómo está escrito el código';
+}
+
+// Resultado: { ok, fallas: [{ mensaje, esperado?, ayuda? }], verificaciones: [{ etiqueta, ok, ... }], error? }
+// Cada verificación puede traer "ayuda": un consejo específico del ejercicio
+// que se muestra cuando esa verificación falla.
 export function validarPython({ verificar = [], codigo = '', resUsuario, resReferencia }) {
   if (resReferencia?.error) {
     return {
       ok: false,
       fallas: [{ mensaje: 'Error interno: la solución de referencia falló. Avísale al desarrollador.' }],
+      verificaciones: [],
       interno: true,
     };
   }
   if (resUsuario.error) {
-    return { ok: false, error: traducirErrorPython(resUsuario.error), fallas: [] };
+    return { ok: false, error: traducirErrorPython(resUsuario.error), fallas: [], verificaciones: [] };
   }
   const fallas = [];
+  const verificaciones = [];
   const codigoSinComentarios = quitarComentarios(codigo, 'python');
   for (const v of verificar) {
     let falla = null;
@@ -250,9 +276,11 @@ export function validarPython({ verificar = [], codigo = '', resUsuario, resRefe
     else if (v.tipo === 'funcion') falla = verificarFuncion(v, resUsuario, resReferencia);
     else if (v.tipo === 'salida') falla = verificarSalida(v, resUsuario.stdout, resReferencia.stdout);
     else if (v.tipo === 'codigoIncluye' || v.tipo === 'codigoNoIncluye') falla = verificarCodigo(v, codigoSinComentarios);
+    if (falla && v.ayuda) falla.ayuda = v.ayuda;
     if (falla) fallas.push(falla);
+    verificaciones.push({ etiqueta: etiquetaVerificacion(v), ok: !falla, ...(falla ?? {}) });
   }
-  return { ok: fallas.length === 0, fallas };
+  return { ok: fallas.length === 0, fallas, verificaciones };
 }
 
 function verificarSonda(clave, v, resU, resR, descripcion) {
@@ -329,6 +357,7 @@ export function validarSQL({ resUsuario, resReferencia, opciones = {}, codigo = 
   const sinComentarios = quitarComentarios(codigo, 'sql');
   for (const v of opciones.verificar ?? []) {
     const f = verificarCodigo(v, sinComentarios);
+    if (f && v.ayuda) f.ayuda = v.ayuda;
     if (f) fallas.push(f);
   }
   if (colsU.length !== colsR.length) {

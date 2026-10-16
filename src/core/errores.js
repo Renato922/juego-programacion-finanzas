@@ -111,6 +111,9 @@ export function traducirErrorPython(error) {
 
 function pistaEspecificaPython({ tipo, mensaje = '' }) {
   let m;
+  if (tipo === 'NameError' && /name '_{2,}' is not defined/.test(mensaje)) {
+    return 'Quedó un hueco ___ sin completar. Reemplázalo por el código que falta.';
+  }
   if (tipo === 'NameError' && (m = mensaje.match(/name '(.+?)' is not defined/))) {
     return `"${m[1]}" no existe todavía. ¿Lo escribiste distinto antes, o le faltan comillas si es texto?`;
   }

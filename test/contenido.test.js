@@ -8,7 +8,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CATALOGO, pasosEvaluables } from '../src/contenido/index.js';
-import { evaluarEjercicio } from '../src/core/evaluador.js';
+import { auditarEjercicio } from './auditoria-contenido.js';
 import { crearMotores, leerDato } from './motores-node.js';
 import { leerCSV, ARCHIVOS_DATOS, generarOperaciones } from '../src/contenido/datos/fondo-condor.js';
 import { validarRespuestaEscrita } from '../src/core/validacion.js';
@@ -22,7 +22,7 @@ function todosLosEjercicios() {
   }
   for (const [id, c] of Object.entries(CATALOGO.conceptos)) {
     c.repasos.forEach((r, i) => {
-      if (r.tipo === 'ejercicio') lista.push({ donde: `repaso ${id}#${i}`, paso: r });
+      if (r.tipo === 'ejercicio') lista.push({ donde: `repaso ${id}#${i}`, paso: r, repaso: true });
     });
   }
   return lista;
@@ -141,22 +141,10 @@ test.before(async () => {
   motores = await crearMotores();
 });
 
-for (const { donde, paso } of todosLosEjercicios()) {
+for (const { donde, paso, repaso } of todosLosEjercicios()) {
   test(`ejercicio ${donde}`, async () => {
-    const ref = await evaluarEjercicio(paso, paso.solucion, motores);
-    assert.equal(ref.ok, true, `la solución no pasa: ${JSON.stringify(ref.fallas ?? ref.error)}`);
-
-    const inicial = await evaluarEjercicio(paso, paso.inicial ?? '', motores);
-    assert.equal(inicial.ok, false, 'el código inicial ya resuelve el ejercicio');
-
-    for (const alt of paso.alternativas ?? []) {
-      const r = await evaluarEjercicio(paso, alt, motores);
-      assert.equal(r.ok, true, `alternativa rechazada: ${alt}\n${JSON.stringify(r.fallas ?? r.error)}`);
-    }
-    for (const mala of paso.incorrectas ?? []) {
-      const r = await evaluarEjercicio(paso, mala, motores);
-      assert.equal(r.ok, false, `respuesta incorrecta aceptada: ${mala}`);
-    }
+    const problemas = await auditarEjercicio(paso, motores, { minimoPistas: repaso ? 2 : 3 });
+    assert.deepEqual(problemas, [], problemas.join('\n'));
   });
 }
 

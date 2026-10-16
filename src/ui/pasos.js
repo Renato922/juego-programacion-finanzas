@@ -264,7 +264,12 @@ function renderEjercicio(paso, ctx, { alCompletar, borrador, alCambiarBorrador, 
           {
             onclick: () => {
               editor.fijar(paso.solucion);
-              terminar(false);
+              resuelto = true;
+              llenar(
+                retro,
+                h('div.retro.mal', {}, h('div.titulo.ambar-t', {}, 'Así se resolvía'), bloqueExplicacion(), h('button.primario', { onclick: () => terminar(false) }, 'Continuar ▸')),
+              );
+              ocupado(true);
             },
           },
           'Ver solución y seguir',
@@ -353,6 +358,20 @@ function renderEjercicio(paso, ctx, { alCompletar, borrador, alCambiarBorrador, 
     ocupado(false);
   }
 
+  // "Cómo se resuelve": la solución de referencia explicada (ejemplo resuelto
+  // después de practicar). Se muestra al acertar y al pedir la solución.
+  function bloqueExplicacion() {
+    if (!paso.explicacion && !paso.solucion) return null;
+    return h(
+      'details.explicacion',
+      { open: true },
+      h('summary', {}, 'Cómo se resuelve'),
+      paso.solucion ? h('pre.codigo-muestra', {}, paso.solucion) : null,
+      paso.explicacion ? h('div', { html: markdown(plantilla(paso.explicacion, ctx.estado())) }) : null,
+      h('p.tenue', {}, 'Si tu solución es distinta pero el juego la aceptó, también está bien: hay varias formas correctas.'),
+    );
+  }
+
   function exito() {
     resuelto = true;
     desempeno.correcto = true;
@@ -372,10 +391,11 @@ function renderEjercicio(paso, ctx, { alCompletar, borrador, alCambiarBorrador, 
             ? 'Resuelto a la primera y sin pistas: suma al bono de ejercicio limpio.'
             : 'Resuelto. Cada error que corregiste también cuenta como práctica.',
         ),
+        bloqueExplicacion(),
         h('button.primario', { onclick: () => terminar(true) }, 'Continuar ▸'),
       ),
     );
-    retro.querySelector('button').focus();
+    retro.querySelector('button.primario').focus();
     botonPista.disabled = true;
     botonReiniciar.disabled = true;
     if (botonRendirse) botonRendirse.disabled = true;
@@ -385,6 +405,7 @@ function renderEjercicio(paso, ctx, { alCompletar, borrador, alCambiarBorrador, 
     desempeno.intentosFallidos++;
     ctx.sonido.error();
     const caja = h('div.retro.mal');
+    const mostrarEsperado = desempeno.intentosFallidos >= 2;
     if (v.interno) {
       caja.append(h('div.titulo.rojo', {}, 'Problema interno'), h('p', {}, v.fallas[0]?.mensaje));
     } else if (v.error) {
@@ -395,13 +416,42 @@ function renderEjercicio(paso, ctx, { alCompletar, borrador, alCambiarBorrador, 
         h('p', {}, h('strong', {}, 'Consejo: '), e.consejo),
         h('code', {}, e.original),
       );
+    } else if (v.verificaciones?.length > 1) {
+      // Lista de verificaciones: deja claro qué parte ya está bien y qué falta.
+      caja.append(
+        h('div.titulo.ambar-t', {}, 'Todavía no: vas bien en parte'),
+        h(
+          'ul.verificaciones',
+          {},
+          v.verificaciones.map((c) =>
+            c.ok
+              ? h('li.ok', {}, h('span.verde', {}, '✔ '), `Correcto: ${c.etiqueta}`)
+              : h(
+                  'li.mal',
+                  {},
+                  h('span.rojo', {}, '✘ '),
+                  c.mensaje,
+                  c.ayuda ? h('div', {}, h('strong', {}, 'Consejo: '), c.ayuda) : null,
+                  mostrarEsperado && c.esperado ? h('div.tenue', {}, `Esperado: ${c.esperado}`) : null,
+                ),
+          ),
+        ),
+      );
     } else {
       caja.append(
         h('div.titulo.ambar-t', {}, 'Todavía no'),
         h(
           'ul',
           {},
-          v.fallas.map((f) => h('li', {}, f.mensaje, desempeno.intentosFallidos >= 2 && f.esperado ? h('div.tenue', {}, `Esperado: ${f.esperado}`) : null)),
+          v.fallas.map((f) =>
+            h(
+              'li',
+              {},
+              f.mensaje,
+              f.ayuda ? h('div', {}, h('strong', {}, 'Consejo: '), f.ayuda) : null,
+              mostrarEsperado && f.esperado ? h('div.tenue', {}, `Esperado: ${f.esperado}`) : null,
+            ),
+          ),
         ),
       );
     }
