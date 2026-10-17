@@ -13,14 +13,16 @@ Entras como **Analista Junior** en *Cóndor Capital*, un fondo de inversión lat
 
 ## 2. Bucles de juego
 
-### Bucle principal (5 a 10 min): la misión
-`Diálogo → Lección con ejemplo ejecutable → Quiz → Ejercicio(s) → Diálogo de cierre → Recompensas`
+### Bucle principal (8 a 13 min): la misión
+`Diálogo → Lección con ejemplo ejecutable → Quiz → Ejercicio(s) → Refuerzos (si hubo errores) → Jefe del día → Diálogo de cierre → Recompensas`
 - **Un concepto nuevo por misión** (carga cognitiva, doc. 3 §7).
 - Los ejercicios **no se saltan**: se avanza al resolver (aprendizaje por dominio, doc. 3 §6).
 - **Validación por resultado:** cualquier solución correcta vale (doc. 1, Zachtronics; doc. 3 §8).
 - Al fallar se muestra el error explicado en español. Desde el segundo intento fallido aparece el valor esperado y una sugerencia de pista.
 - **3 pistas** que escalan: idea → estructura → casi solución con huecos `___` (doc. 3 §9).
 - Pausa en cualquier momento, con borrador guardado (efecto Ovsiankina, doc. 2 §2).
+- **Barra de dominio** (estilo ALEKS; ver §5b): equivocarse la hace retroceder y agrega un ejercicio de refuerzo del mismo tema.
+- **Jefe del día**: cada misión termina con un reto de una fase que combina lo del día, con 3 vidas (§5).
 
 ### Bucle de sesión (10 a 30 min): encadenar
 Al cerrar una misión se ofrece "**Siguiente: …▸**". La recomendación alterna Python y SQL (intercalado) y, si hay 4 o más repasos vencidos, propone ir a la Sala de trading.
@@ -91,9 +93,13 @@ Al cerrar una misión se ofrece "**Siguiente: …▸**". La recomendación alter
 **Balance de referencia.** Jugar el capítulo 1 completo da unos **$35,000 a $40,000** (en dos corridas de la prueba automática: $36,068 y $39,090, sin invertir; varía por la caja de dividendos). Alcanza para varias mejoras de nivel 1 y 2 y empezar a invertir. Los costos de mejoras del capítulo 2 en adelante se calibrarán con esa cifra.
 
 ## 5. Batallas contra jefes
-- Un jefe por capítulo, con **barra de vida** = suma del daño de sus fases (capítulo 1: 6 fases, 100 HP).
-- Cada fase es un ejercicio o quiz que **mezcla** temas de todo el capítulo y de capítulos anteriores (intercalado). El jefe "provoca" en cada fase.
-- **No hay vida del jugador**: fallar no hace perder; se corrige y se sigue (doc. 1, Hades).
+- **Dos niveles de jefe:**
+  - **Jefe del día**, al final de cada misión: un reto de **una fase** que combina lo aprendido ese día. En el capítulo 1 son dos rivales: **Gonzalo Vega** (trader de la mesa de al lado, pista de Python) y **Rita Ledesma** (jefa de datos del Banco Andino, pista de SQL).
+  - **Jefe del capítulo**, con **barra de vida** = suma del daño de sus fases (capítulo 1: 6 fases, 100 HP). Cada fase **mezcla** temas de todo el capítulo y de capítulos anteriores (intercalado). El jefe "provoca" en cada fase.
+- **3 vidas del jugador en todos los jefes** (inspirado en los últimos niveles de ALEKS):
+  - cada **comprobación** fallida cuesta una vida; **ejecutar** el código y **abrir pistas no cuestan vidas**, así que siempre se puede probar antes de arriesgar;
+  - sin vidas, el jefe se **reintenta al instante** (el del capítulo, desde la fase 1), **sin esperas** y **sin perder capital, XP ni misiones**;
+  - en **modo poca energía** no hay vidas.
 - **Crítico** con 2 o más fases limpias seguidas (efecto visual).
 - **Nota final**:
 
@@ -106,6 +112,15 @@ Al cerrar una misión se ofrece "**Siguiente: …▸**". La recomendación alter
 
 - Se guarda la mejor nota y se puede pedir **revancha** cuando quieras (doc. 1, Zachtronics).
 - **Jefes en herramientas reales** (capítulos 2 a 6): el juego entrega los archivos del reto (CSV/XLSX, exportados con `plataforma.exportarArchivo`) y valida el resultado pegando valores (`validarRespuestaEscrita`, que ya acepta "1.234,56", "12%" y "$ 3 000") o leyendo el archivo exportado (`plataforma.importarArchivo`). La infraestructura ya existe; el contenido llega con cada capítulo.
+
+## 5b. Barra de dominio (estilo ALEKS)
+- Cada ejercicio o quiz de la misión es un segmento. Resolverlo lo llena.
+- El **primer** error en un paso hace retroceder la barra un segmento y agenda un **ejercicio de refuerzo** del mismo concepto (un repaso del catálogo). Los refuerzos se juegan antes del jefe del día; fallar un refuerzo ofrece otro del mismo tema. Un paso cobra un solo retroceso y los errores dentro de un refuerzo no agregan más: no hay espirales.
+- Nunca se pierde capital, XP ni lo completado: el retroceso solo pide demostrar el tema otra vez.
+- En **modo poca energía** la barra no retrocede.
+- Lógica pura en `src/core/dominio.js`, probada en `test/dominio.test.js`.
+
+**Por qué se cambió la decisión original.** La primera versión no tenía vidas ni retrocesos ("fallar no hace perder", doc. 1, Hades). Después de jugar, el dueño del proyecto pidió esta mecánica, recordando que en ALEKS le ayudaba. Se adoptó con las salvaguardas que pide la investigación del doc. 2: lo que más desmotiva es **perder lo ya ganado** y **culparse** (Silverman y Barasch, 2023; Habitica), así que el retroceso nunca quita capital, XP ni misiones, no hay esperas, los mensajes no culpan y el modo poca energía lo desactiva. La barra de dominio, además, refuerza el aprendizaje por dominio (doc. 3 §6): un error se convierte en práctica extra del mismo tema.
 
 ## 6. Entrenamiento y repaso espaciado ("Sala de trading")
 - Cada concepto aprendido es una **tarjeta SM-2** (doc. 3 §2). La calidad (0 a 5) sale del desempeño: intentos, pistas y última pista.
@@ -128,6 +143,7 @@ Una carta por concepto (29 en el capítulo 1). Las no descubiertas se ven como "
 - Atajos de teclado (Ctrl+Enter, Shift+Enter, Enter para diálogos).
 - Lenguaje sin culpa por defecto. Modo compromiso opcional con reglas estrictas (doc. 2 §10).
 - Progreso solo local, con exportar e importar respaldo. Borrar la partida exige doble confirmación.
+- **Menú principal** con Continuar, Nueva partida, Cargar partida, Importar respaldo y Salir. Hay **3 ranuras** de partida independientes (por ejemplo, para otra persona en la misma computadora). La partida guardada antes de existir las ranuras aparece en la ranura 1. Borrar una ranura no destruye el archivo: queda como `ranura-N.borrada.json`.
 
 ## 9. Estilo visual
 Pixel art dibujado por código (retratos 16×16 y oficina 192×108) más una "terminal financiera" oscura:
@@ -138,8 +154,8 @@ Pixel art dibujado por código (retratos 16×16 y oficina 192×108) más una "te
 ## 10. Arquitectura técnica
 
 ```
-electron/      main.js (ventana, protocolo app://, caché de Pyodide, guardado), preload.cjs (puente seguro), rutas.js
-src/core/      lógica pura y probada: srs, economía, validación, errores, progreso, diagnóstico, batallas, entrenamiento, regreso, arnés de Python, ejecutor SQL, evaluador
+electron/      main.js (ventana, protocolo app://, caché de Pyodide), partidas.js (ranuras de guardado), preload.cjs (puente seguro), rutas.js
+src/core/      lógica pura y probada: srs, economía, validación, errores, progreso, diagnóstico, batallas (con vidas), barra de dominio, entrenamiento, regreso, arnés de Python, ejecutor SQL, evaluador
 src/contenido/ capítulos, misiones, jefes, conceptos (con repasos), mejoras, rangos, test de nivel, base de datos del fondo
 src/runtimes/  workers de Python (Pyodide) y SQL (sql.js), motores con tiempo máximo, versiones fijas
 src/ui/        interfaz sin frameworks: pantallas, pasos, editor (CodeMirror 5), pixel art, gráficos, sonido

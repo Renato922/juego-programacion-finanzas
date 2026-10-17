@@ -9,6 +9,9 @@ const RETRATOS = {
   aurelio: { piel: '#d9a066', pelo: '#d8d8d8', estilo: 'canoso', ropa: '#3c2a5a', detalle: '#d6bcfa', accesorio: 'corbata' },
   valdivia: { piel: '#e8b88a', pelo: '#111111', estilo: 'mono', ropa: '#4a1020', detalle: '#fc8181', accesorio: 'lentes' },
   becario: { piel: '#a8754f', pelo: '#1a1a1a', estilo: 'corto', ropa: '#3f6e3a', detalle: '#b5e3a1', accesorio: null },
+  // Rivales de los jefes del día: Gonzalo Vega (Python) y Rita Ledesma (SQL).
+  vega: { piel: '#d8a47a', pelo: '#4a2c12', estilo: 'peinado', ropa: '#5a1f1f', detalle: '#f6e05e', accesorio: 'corbata' },
+  ledesma: { piel: '#b07850', pelo: '#2d1b4e', estilo: 'largo', ropa: '#1d4d4f', detalle: '#81e6d9', accesorio: 'lentes' },
 };
 
 function lienzo(ancho, alto) {

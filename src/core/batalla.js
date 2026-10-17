@@ -1,13 +1,26 @@
 // Batallas contra jefes.
 //
-// El jefe tiene una barra de vida; cada fase resuelta le quita vida. No hay
-// vida del jugador: fallar no te hace perder nada, solo no avanzas hasta
-// resolver bien (con pistas que escalan). Lo que cambia es la nota final
-// (S, A, B, C), que invita a una revancha para mejorarla.
+// El jefe tiene una barra de vida; cada fase resuelta le quita vida.
+//
+// El jugador tiene 3 vidas (como en los últimos niveles de ALEKS): cada
+// comprobación fallida cuesta una. Ejecutar el código y abrir pistas no cuesta
+// vidas. Sin vidas, la batalla se reinicia al instante, sin esperas y sin
+// perder capital, XP ni misiones. En modo poca energía no hay vidas.
+// La nota final (S, A, B, C) invita a una revancha para mejorarla.
+
+export const VIDAS_JUGADOR = 3;
 
 export function crearBatalla(jefe) {
   const vidaMax = jefe.fases.reduce((s, f) => s + f.dano, 0);
-  return { jefeId: jefe.id, vida: vidaMax, vidaMax, fase: 0, combo: 0, resultados: [] };
+  return { jefeId: jefe.id, vida: vidaMax, vidaMax, fase: 0, combo: 0, resultados: [], vidas: VIDAS_JUGADOR };
+}
+
+// Una comprobación fallida. Las partidas guardadas antes de que existieran
+// las vidas empiezan con las 3.
+export function perderVida(batallaOriginal) {
+  const batalla = structuredClone(batallaOriginal);
+  batalla.vidas = Math.max(0, (batalla.vidas ?? VIDAS_JUGADOR) - 1);
+  return { batalla, sinVidas: batalla.vidas === 0 };
 }
 
 // desempeno: { correcto, intentosFallidos, pistas, pistaFinal }

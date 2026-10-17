@@ -7,11 +7,12 @@ import { rangoDeEstado, metaSemanal } from '../core/progreso.js';
 import { tarjetasVencidas, repartirAtrasadas } from '../core/srs.js';
 import { aum, formatoDinero } from '../core/economia.js';
 import { mensajeDeRegreso } from '../core/regreso.js';
-import { plataforma } from '../plataforma/index.js';
+import { plataforma, RANURAS } from '../plataforma/index.js';
 import { crearMotores } from '../runtimes/motores.js';
 import { sonido, configurarSonido } from './sonido.js';
 import { iconoLenguaje } from './pixel.js';
 
+import * as menu from './pantallas/menu.js';
 import * as inicio from './pantallas/inicio.js';
 import * as diagnostico from './pantallas/diagnostico.js';
 import * as oficina from './pantallas/oficina.js';
@@ -24,7 +25,7 @@ import * as coleccion from './pantallas/coleccion.js';
 import * as herramientas from './pantallas/herramientas.js';
 import * as ajustes from './pantallas/ajustes.js';
 
-const PANTALLAS = { inicio, diagnostico, oficina, mapa, mision, jefe, entrenamiento, fondo, coleccion, herramientas, ajustes };
+const PANTALLAS = { menu, inicio, diagnostico, oficina, mapa, mision, jefe, entrenamiento, fondo, coleccion, herramientas, ajustes };
 const NAV = [
   ['oficina', 'Oficina'],
   ['mapa', 'Carrera'],
@@ -36,6 +37,7 @@ const NAV = [
 ];
 
 let estado = null;
+let ranura = null; // ranura de partida en uso (1..RANURAS)
 let pantallaActual = null;
 let temporizadorGuardado = null;
 const raiz = document.getElementById('app');
@@ -71,21 +73,68 @@ const ctx = {
     await guardar();
     ctx.ir('inicio');
   },
+
+  // ---- Menú principal y ranuras de partida ----
+  ranuraActual: () => ranura,
+  async leerRanuras() {
+    const ahora = Date.now();
+    const lista = [];
+    for (let n = 1; n <= RANURAS; n++) {
+      const texto = await plataforma.leerPartida(n);
+      const e = texto ? deserializar(texto, ahora) : null;
+      lista.push({ ranura: n, estado: e?.jugador?.nombre ? e : null });
+    }
+    return lista;
+  },
+  async irAlMenu() {
+    clearTimeout(temporizadorGuardado);
+    await guardar();
+    ctx.ir('menu');
+  },
+  async nuevaPartida(n) {
+    ranura = n;
+    estado = crearEstadoInicial(Date.now());
+    aplicarAjustes();
+    await guardar();
+    ctx.ir('inicio');
+  },
+  // e: estado ya leído de la ranura (o de un respaldo importado).
+  async abrirPartida(n, e) {
+    ranura = n;
+    const ahora = Date.now();
+    if (!e?.jugador?.nombre) return ctx.nuevaPartida(n);
+    // Si volvió después de mucho, se reparte la pila de repasos (nada se pierde).
+    const vencidas = tarjetasVencidas(e.tarjetas, ahora).length;
+    const mensaje = mensajeDeRegreso(e, ahora, { vencidas });
+    estado = { ...e, tarjetas: repartirAtrasadas(e.tarjetas, ahora, e.ajustes.energiaBaja ? 3 : 8), ultimaVisita: ahora };
+    aplicarAjustes();
+    ctx.ir('oficina');
+    await guardar();
+    if (mensaje) mostrarRegreso(mensaje);
+  },
+  async borrarPartida(n) {
+    if (n === ranura) {
+      ranura = null;
+      estado = null;
+    }
+    await plataforma.borrarPartida(n);
+  },
 };
 
 async function guardar() {
-  if (!estado) return;
-  await plataforma.guardarProgreso(serializar(estado));
+  if (!estado || !ranura) return;
+  await plataforma.guardarPartida(ranura, serializar(estado));
 }
 
 function aplicarAjustes() {
+  if (!estado) return;
   configurarSonido(estado.ajustes.sonido);
   document.body.classList.toggle('sin-animaciones', !estado.ajustes.animaciones);
 }
 
 function pintarHUD() {
   vaciar(hud);
-  if (!estado || pantallaActual === 'inicio' || pantallaActual === 'diagnostico') {
+  if (!estado || pantallaActual === 'menu' || pantallaActual === 'inicio' || pantallaActual === 'diagnostico') {
     hud.append(h('div.logo', {}, iconoLenguaje('finanzas'), 'CÓNDOR CAPITAL'));
     return;
   }
@@ -133,6 +182,7 @@ function pintarHUD() {
       'nav',
       { 'aria-label': 'Secciones' },
       NAV.map(([id, texto]) => h('button' + (pantallaActual === id ? '.activa' : ''), { onclick: () => (sonido.clic(), ctx.ir(id)) }, texto)),
+      h('button', { onclick: () => (sonido.clic(), ctx.irAlMenu()), title: 'Guardar y volver al menú principal' }, '☰ Menú'),
     ),
   ];
   hud.append(...piezas.filter(Boolean));
@@ -141,25 +191,7 @@ function pintarHUD() {
 async function arrancar() {
   raiz.textContent = '';
   raiz.append(hud, contenido);
-  const ahora = Date.now();
-  const texto = await plataforma.leerProgreso();
-  const guardado = texto ? deserializar(texto, ahora) : null;
-  if (!guardado || !guardado.jugador?.nombre) {
-    estado = guardado ?? crearEstadoInicial(ahora);
-    aplicarAjustes();
-    ctx.ir('inicio');
-    return;
-  }
-  estado = guardado;
-  // Si volvió después de mucho, se reparte la pila de repasos (nada se pierde).
-  const vencidas = tarjetasVencidas(estado.tarjetas, ahora).length;
-  const mensaje = mensajeDeRegreso(estado, ahora, { vencidas });
-  estado = { ...estado, tarjetas: repartirAtrasadas(estado.tarjetas, ahora, estado.ajustes.energiaBaja ? 3 : 8) };
-  estado.ultimaVisita = ahora;
-  aplicarAjustes();
-  ctx.ir('oficina');
-  guardar();
-  if (mensaje) mostrarRegreso(mensaje);
+  ctx.ir('menu');
 }
 
 function mostrarRegreso(mensaje) {
@@ -189,7 +221,7 @@ function mostrarRegreso(mensaje) {
 }
 
 window.addEventListener('beforeunload', () => {
-  if (estado) plataforma.guardarProgreso(serializar(estado));
+  if (estado && ranura) plataforma.guardarPartida(ranura, serializar(estado));
 });
 
 arrancar().catch((e) => {

@@ -65,11 +65,11 @@ test('los requisitos apuntan a misiones existentes y no hay ciclos', () => {
   for (const m of misiones) visitar(m.id);
 });
 
-test('las misiones duran entre 5 y 10 minutos y el jefe es más largo', () => {
+test('las misiones duran entre 5 y 13 minutos (incluido su jefe del día) y el jefe del capítulo es más largo', () => {
   for (const m of misiones) {
     const minutos = Number(m.duracion.match(/\d+/)[0]);
     if (m.tipo === 'jefe') assert.ok(minutos >= 15, m.id);
-    else assert.ok(minutos >= 5 && minutos <= 10, `${m.id}: ${m.duracion}`);
+    else assert.ok(minutos >= 5 && minutos <= 13, `${m.id}: ${m.duracion}`);
   }
 });
 

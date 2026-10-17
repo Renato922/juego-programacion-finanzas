@@ -1071,3 +1071,87 @@ ul.verificaciones {
 ul.verificaciones li {
   margin: 4px 0;
 }
+
+/* ---------- Barra de dominio, vidas y jefe del día ---------- */
+
+.dominio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -6px 0 14px;
+}
+.dominio .etiqueta {
+  font-family: var(--fuente-titulo);
+  font-size: 10px;
+  color: var(--texto-2);
+}
+.dominio-segmentos {
+  display: flex;
+  gap: 3px;
+  flex: 1;
+  max-width: 420px;
+}
+.dominio-segmentos i {
+  flex: 1;
+  height: 8px;
+  background: var(--panel-3);
+  border: 1px solid var(--borde);
+}
+.dominio-segmentos i.lleno {
+  background: var(--azul);
+  border-color: var(--azul);
+}
+.dominio-segmentos i.refuerzo {
+  background: transparent;
+  border: 1px dashed var(--ambar);
+}
+.aviso-fallo {
+  color: var(--ambar);
+  margin: 6px 0 0;
+}
+.refuerzo-aviso {
+  margin-bottom: 12px;
+  border-color: var(--ambar);
+}
+.corazones {
+  display: inline-flex;
+  gap: 4px;
+  font-size: 22px;
+  line-height: 1;
+}
+.corazones i {
+  font-style: normal;
+  color: var(--texto-3);
+}
+.corazones i.lleno {
+  color: var(--peligro);
+}
+.jefe-dia canvas {
+  width: 88px;
+  height: 88px;
+}
+
+/* ---------- Menú principal ---------- */
+
+.menu-botones {
+  align-items: stretch;
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+  gap: 10px;
+}
+.ranura {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.ranura:last-of-type {
+  border-bottom: none;
+}
+button.peligro {
+  border-color: var(--peligro);
+  color: var(--peligro);
+}

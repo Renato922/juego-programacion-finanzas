@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolverRuta, tipoMime } from './rutas.js';
 import { crearCacheRuntime } from './cache-runtimes.js';
+import { numeroValido, leerRanura, guardarRanura, borrarRanura } from './partidas.js';
 import { PYODIDE_VERSION, PYODIDE_CDN } from '../src/runtimes/versiones.js';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -26,18 +27,6 @@ let cachePyodide = null;
 
 function carpetaPartida() {
   return path.join(app.getPath('userData'), 'partida');
-}
-
-async function escribirSeguro(archivo, texto) {
-  await fs.promises.mkdir(path.dirname(archivo), { recursive: true });
-  const temporal = archivo + '.tmp';
-  await fs.promises.writeFile(temporal, texto, 'utf8');
-  try {
-    await fs.promises.copyFile(archivo, archivo + '.bak');
-  } catch {
-    // Primera vez: no hay copia anterior.
-  }
-  await fs.promises.rename(temporal, archivo);
 }
 
 async function servir(request) {
@@ -103,23 +92,10 @@ app.whenReady().then(() => {
   });
   protocol.handle('app', servir);
 
-  const archivoProgreso = path.join(carpetaPartida(), 'progreso.json');
-  ipcMain.handle('progreso:leer', async () => {
-    try {
-      return await fs.promises.readFile(archivoProgreso, 'utf8');
-    } catch {
-      try {
-        return await fs.promises.readFile(archivoProgreso + '.bak', 'utf8');
-      } catch {
-        return null;
-      }
-    }
-  });
-  ipcMain.handle('progreso:guardar', async (_e, texto) => {
-    if (typeof texto !== 'string' || texto.length > 20_000_000) return false;
-    await escribirSeguro(archivoProgreso, texto);
-    return true;
-  });
+  ipcMain.handle('partida:leer', async (_e, n) => (numeroValido(n) ? leerRanura(carpetaPartida(), n) : null));
+  ipcMain.handle('partida:guardar', async (_e, n, texto) => (numeroValido(n) ? guardarRanura(carpetaPartida(), n, texto) : false));
+  ipcMain.handle('partida:borrar', async (_e, n) => (numeroValido(n) ? borrarRanura(carpetaPartida(), n) : false));
+  ipcMain.handle('app:salir', () => app.quit());
   ipcMain.handle('archivo:exportar', async (_e, { nombre, contenido }) => {
     const r = await dialog.showSaveDialog(ventana, { defaultPath: nombre });
     if (r.canceled || !r.filePath) return false;

@@ -31,7 +31,7 @@ export function render(ctx) {
     nombre,
     h('label.interruptor', {}, energia, 'Hoy tengo poca energía (sesiones más cortas, sin temporizadores ni presión)'),
     h('p.tenue', {}, 'Tu progreso se guarda solo, en tu computadora. No hay cuentas ni servidores, y no se pierde nada por dejar de jugar unos días.'),
-    empezar,
+    h('div.fila', {}, empezar, h('button', { onclick: () => ctx.irAlMenu() }, '◂ Volver al menú')),
   );
   raiz.append(formulario);
   setTimeout(() => nombre.focus(), 50);

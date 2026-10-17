@@ -2,9 +2,13 @@
 // quiz de opción múltiple y "completar". Los usan misiones, jefes y la
 // Sala de trading.
 //
-// renderPaso(paso, ctx, { modo, alCompletar, borrador, alCambiarBorrador })
+// renderPaso(paso, ctx, { modo, alCompletar, alFallar, borrador, alCambiarBorrador })
 //   modo: 'mision' | 'jefe' | 'repaso'
 //   alCompletar(desempeno) se llama cuando el paso queda resuelto.
+//   alFallar(desempeno) se llama en cada respuesta equivocada (no en errores
+//   internos del motor). Si devuelve un texto, se muestra en la
+//   retroalimentación: por ejemplo "Perdiste una vida" o "La barra de dominio
+//   bajó un paso".
 
 import { h, markdown, plantilla, vaciar, llenar } from './dom.js';
 import { retrato } from './pixel.js';
@@ -223,7 +227,7 @@ function mostrarResultado(salida, r, lenguaje) {
 
 // ---------- Ejercicio de código ----------
 
-function renderEjercicio(paso, ctx, { alCompletar, borrador, alCambiarBorrador, modo = 'mision' }) {
+function renderEjercicio(paso, ctx, { alCompletar, alFallar, borrador, alCambiarBorrador, modo = 'mision' }) {
   const desempeno = { concepto: paso.concepto, correcto: false, intentosFallidos: 0, pistas: 0, pistaFinal: false };
   let resuelto = false;
   const pistas = paso.pistas ?? [];
@@ -410,6 +414,7 @@ function renderEjercicio(paso, ctx, { alCompletar, borrador, alCambiarBorrador, 
   function fallo(v) {
     desempeno.intentosFallidos++;
     ctx.sonido.error();
+    const aviso = v.interno ? null : alFallar?.(desempeno);
     const caja = h('div.retro.mal');
     const mostrarEsperado = desempeno.intentosFallidos >= 2;
     if (v.interno) {
@@ -461,11 +466,12 @@ function renderEjercicio(paso, ctx, { alCompletar, borrador, alCambiarBorrador, 
         ),
       );
     }
+    if (aviso) caja.prepend(h('p.aviso-fallo', {}, aviso));
     if (desempeno.intentosFallidos >= 2 && desempeno.pistas < pistas.length) {
-      caja.append(h('p.tenue', {}, '¿Abrimos una pista? Las pistas no te quitan capital; solo el bono de ejercicio limpio.'));
+      caja.append(h('p.tenue', {}, '¿Abrimos una pista? Las pistas no cuestan vidas ni capital; solo el bono de ejercicio limpio.'));
       botonPista.style.animation = 'latido 1.2s ease-in-out infinite';
-    } else {
-      caja.append(h('p.tenue', {}, 'Corrige y vuelve a comprobar. No hay castigo: solo avanzas cuando funcione.'));
+    } else if (!aviso) {
+      caja.append(h('p.tenue', {}, 'Corrige y vuelve a comprobar: solo avanzas cuando funcione.'));
     }
     llenar(retro, caja);
   }
@@ -540,7 +546,7 @@ function panelEsquema(ctx, db) {
 
 // ---------- Quiz de opción múltiple ----------
 
-function renderQuiz(paso, ctx, { alCompletar, modo = 'mision', descartar = false }) {
+function renderQuiz(paso, ctx, { alCompletar, alFallar, modo = 'mision', descartar = false }) {
   const desempeno = { concepto: paso.concepto, correcto: false, intentosFallidos: 0, pistas: 0 };
   const explicacion = h('div');
   const unSoloIntento = modo === 'repaso';
@@ -567,13 +573,14 @@ function renderQuiz(paso, ctx, { alCompletar, modo = 'mision', descartar = false
       botones[i].classList.add('incorrecta');
       botones[i].disabled = true;
       ctx.sonido.error();
+      const aviso = alFallar?.(desempeno);
       if (unSoloIntento) {
         terminado = true;
         botones[paso.correcta].classList.add('correcta');
         botones.forEach((b) => (b.disabled = true));
         mostrarExplicacion(false);
       } else {
-        llenar(explicacion, h('div.retro.mal', {}, h('p', {}, 'No es esa. Piénsalo otra vez: ningún intento te quita nada.')));
+        llenar(explicacion, h('div.retro.mal', {}, h('p', {}, 'No es esa. Piénsalo otra vez.'), aviso ? h('p.aviso-fallo', {}, aviso) : null));
       }
     }
   }
@@ -609,7 +616,7 @@ function renderQuiz(paso, ctx, { alCompletar, modo = 'mision', descartar = false
 
 // ---------- Completar (repasos) ----------
 
-function renderCompletar(paso, ctx, { alCompletar }) {
+function renderCompletar(paso, ctx, { alCompletar, alFallar }) {
   const desempeno = { concepto: paso.concepto, correcto: false, intentosFallidos: 0, pistas: 0 };
   const entrada = h('input', { type: 'text', 'aria-label': 'Tu respuesta', autocomplete: 'off', spellcheck: false });
   const resultado = h('div');
@@ -622,6 +629,8 @@ function renderCompletar(paso, ctx, { alCompletar }) {
     entrada.disabled = true;
     if (r.ok) ctx.sonido.acierto();
     else ctx.sonido.error();
+    if (!r.ok) desempeno.intentosFallidos = 1;
+    const aviso = r.ok ? null : alFallar?.(desempeno);
     llenar(
       resultado,
       h(
@@ -629,6 +638,7 @@ function renderCompletar(paso, ctx, { alCompletar }) {
         {},
         h('div.titulo.' + (r.ok ? 'verde' : 'rojo'), {}, r.ok ? '¡Correcto!' : `Respuesta: ${paso.respuesta}`),
         !r.ok && r.mensaje ? h('p', {}, r.mensaje) : null,
+        aviso ? h('p.aviso-fallo', {}, aviso) : null,
         paso.explicacion ? h('p', {}, paso.explicacion) : null,
         h('button.primario', { onclick: () => alCompletar?.(desempeno) }, 'Continuar ▸'),
       ),

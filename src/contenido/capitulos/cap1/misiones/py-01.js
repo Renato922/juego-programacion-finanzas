@@ -7,7 +7,7 @@ export default {
   resumen: 'Variables, operaciones, porcentajes y print(): tu sueldo, la comisión del fondo y tu primera compra de acciones.',
   pista: 'python',
   lenguaje: 'python',
-  duracion: '9 min',
+  duracion: '12 min',
   requiere: [],
   nivelDiagnostico: 1,
   conceptos: ['py.variables', 'py.aritmetica'],
@@ -29,7 +29,7 @@ export default {
         },
         {
           quien: 'marta',
-          texto: 'Regla de la casa: nadie nace sabiendo. Si tu código falla, lo arreglamos. Equivocarte no te quita nada.',
+          texto: 'Regla de la casa: nadie nace sabiendo. Si tu código falla, lo arreglamos. Equivocarte nunca te quita lo que ya ganaste: solo te pide practicar un poco más.',
         },
       ],
     },
@@ -347,6 +347,73 @@ export default {
         },
         'cash = 10000\nprice = 44.55\nshares = cash / price\nleftover = 0',
       ],
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'py-01-jefe',
+      jefe: {
+        nombre: 'Gonzalo Vega',
+        sprite: 'vega',
+        provocacion: 'Soy Gonzalo, de la mesa de trading de al lado. ¿Así que tú eres {nombre}? A ver si sabes cuántas acciones te alcanzan sin calculadora.',
+        derrota: 'Hmm. 23 acciones y 140 de vuelto. Bien hecho, novato… digo, {nombre}.',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'py-01-jefe-e1',
+        concepto: 'py.aritmetica',
+        lenguaje: 'python',
+        enunciado:
+          'Gonzalo te reta: con `cash = 7500` dólares y acciones a `price = 320`, calcula:\n\n- `shares`: cuántas acciones **enteras** puedes comprar (con `//`);\n- `leftover`: el dinero que te sobra (con `%`);\n- `total_cost`: lo que pagas por esas acciones (`shares * price`).\n\nMuestra `shares` y `leftover` con `print(shares, leftover)`.',
+        inicial: 'cash = 7500\nprice = 320\n\n# Escribe tu código debajo\n',
+        solucion: 'cash = 7500\nprice = 320\n\nshares = cash // price\nleftover = cash % price\ntotal_cost = shares * price\nprint(shares, leftover)',
+        verificar: [
+          {
+            tipo: 'variable',
+            nombre: 'shares',
+            ayuda: 'Acciones enteras: shares = cash // price, con dos barras. Una sola barra (/) da decimales.',
+          },
+          {
+            tipo: 'variable',
+            nombre: 'leftover',
+            ayuda: 'Lo que sobra es el resto de la división: leftover = cash % price (primero el dinero, después el precio).',
+          },
+          {
+            tipo: 'variable',
+            nombre: 'total_cost',
+            ayuda: 'total_cost = shares * price: lo que pagas por las acciones enteras.',
+          },
+          {
+            tipo: 'salida',
+            modo: 'numeros',
+            etiqueta: 'mostrar shares y leftover con print()',
+            ayuda: 'Muestra los dos valores con print(shares, leftover).',
+          },
+        ],
+        explicacion:
+          '`cash // price` da 7500 // 320 = 23 acciones enteras y `cash % price` da 140: lo que sobra (23 × 320 = 7360 y 7500 − 7360 = 140). `total_cost = shares * price` es 7360.\n\nEl error típico es usar `/`, que da 23.4375: no se compran fracciones de acción. Y crear las variables no las muestra: hace falta `print(shares, leftover)`.',
+        pistas: [
+          'Usa los dos operadores de la misión: // para las acciones enteras y % para lo que sobra.',
+          'shares usa //, leftover usa % (con cash y price en ese orden) y total_cost multiplica shares por price.',
+          'shares = cash // price\nleftover = cash % _____\ntotal_cost = shares * _____\nprint(shares, ________)',
+        ],
+        alternativas: [
+          'cash = 7500\nprice = 320\nshares = cash // price\ntotal_cost = shares * price\nleftover = cash - total_cost\nprint("Acciones:", shares, "Sobra:", leftover)',
+        ],
+        incorrectas: [
+          {
+            codigo: 'cash = 7500\nprice = 320\nshares = cash / price\nleftover = cash % price\ntotal_cost = shares * price\nprint(shares, leftover)',
+            retro: 'dos barras',
+          },
+          {
+            codigo: 'cash = 7500\nprice = 320\nshares = cash // price\nleftover = price % cash\ntotal_cost = shares * price\nprint(shares, leftover)',
+            retro: 'primero el dinero',
+          },
+          {
+            codigo: 'cash = 7500\nprice = 320\nshares = cash // price\nleftover = cash % price\ntotal_cost = shares * price\nprint()',
+            retro: 'no mostró nada',
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',

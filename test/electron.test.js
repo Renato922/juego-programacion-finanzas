@@ -73,3 +73,34 @@ test('caché de Pyodide: descarga una vez, prueba el CDN siguiente si falla y lu
   );
   fs.rmSync(carpeta, { recursive: true, force: true });
 });
+
+test('ranuras de partida: guardan por separado, la partida anterior se lee como ranura 1 y borrar no destruye', async () => {
+  const { leerRanura, guardarRanura, borrarRanura, numeroValido, RANURAS } = await import('../electron/partidas.js');
+  const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'condor-partidas-'));
+  try {
+    assert.equal(RANURAS, 3);
+    assert.equal(numeroValido(0), false);
+    assert.equal(numeroValido(4), false);
+    assert.equal(numeroValido('1'), false);
+    assert.equal(await leerRanura(carpeta, 2), null);
+
+    fs.writeFileSync(path.join(carpeta, 'progreso.json'), '{"vieja":true}');
+    assert.equal(await leerRanura(carpeta, 1), '{"vieja":true}', 'la partida de antes de las ranuras aparece en la ranura 1');
+    assert.equal(await leerRanura(carpeta, 2), null);
+
+    assert.equal(await guardarRanura(carpeta, 2, '{"b":1}'), true);
+    assert.equal(await guardarRanura(carpeta, 2, '{"b":2}'), true);
+    assert.equal(await leerRanura(carpeta, 2), '{"b":2}');
+    assert.equal(fs.readFileSync(path.join(carpeta, 'ranura-2.json.bak'), 'utf8'), '{"b":1}', 'guarda copia de la versión anterior');
+    assert.equal(await guardarRanura(carpeta, 2, 42), false, 'solo acepta texto');
+
+    await borrarRanura(carpeta, 1);
+    assert.equal(await leerRanura(carpeta, 1), null);
+    await borrarRanura(carpeta, 2);
+    assert.equal(await leerRanura(carpeta, 2), null);
+    assert.equal(fs.readFileSync(path.join(carpeta, 'ranura-2.borrada.json'), 'utf8'), '{"b":2}', 'la partida borrada se puede recuperar a mano');
+    await assert.rejects(guardarRanura(carpeta, 9, '{}'), /Ranura inválida/);
+  } finally {
+    fs.rmSync(carpeta, { recursive: true, force: true });
+  }
+});

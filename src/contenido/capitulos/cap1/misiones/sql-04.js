@@ -7,7 +7,7 @@ export default {
   resumen: 'COUNT, SUM, AVG, MIN, MAX y ROUND.',
   pista: 'sql',
   lenguaje: 'sql',
-  duracion: '8 min',
+  duracion: '11 min',
   requiere: ['sql-03'],
   nivelDiagnostico: 4,
   conceptos: ['sql.agregados'],
@@ -166,6 +166,52 @@ export default {
           retro: 'WHERE year BETWEEN',
         },
       ],
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'sql-04-jefe',
+      jefe: {
+        nombre: 'Rita Ledesma',
+        sprite: 'ledesma',
+        provocacion: 'Contabilidad quiere un resumen de las ventas en UNA fila. Tres números. ¿Puedes?',
+        derrota: '7 ventas, 36854.75 en total y 39.75 de precio promedio. Cuadra con mis libros.',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'sql-04-jefe-e1',
+        concepto: 'sql.agregados',
+        lenguaje: 'sql',
+        db: 'fondo',
+        enunciado:
+          "Resume las **ventas** (`side = 'sell'`) en una sola fila con, en este orden: cuántas son (`COUNT(*)`), el monto total (`SUM(quantity * price)`) y el precio promedio redondeado a 2 decimales (`ROUND(AVG(price), 2)`).",
+        inicial: '',
+        solucion: "SELECT COUNT(*), SUM(quantity * price), ROUND(AVG(price), 2) FROM trades WHERE side = 'sell';",
+        opciones: {
+          tol: {
+            abs: 0.01,
+            rel: 1e-9,
+          },
+          ayuda: "Tres agregaciones en este orden (conteo, monto total, precio promedio redondeado) y el filtro WHERE side = 'sell'.",
+        },
+        explicacion:
+          "`WHERE side = 'sell'` deja solo las ventas **antes** de agregar. Después, `COUNT(*)` cuenta 7 operaciones, `SUM(quantity * price)` suma 36854.75 y `ROUND(AVG(price), 2)` da 39.75.\n\nLas columnas se comparan en el orden pedido: conteo, monto y promedio.",
+        pistas: [
+          'Tres agregaciones en el mismo SELECT y un WHERE para quedarte con las ventas.',
+          'SELECT COUNT(*), SUM(quantity * price), ROUND(AVG(price), 2) FROM trades WHERE ...',
+          "SELECT COUNT(*), SUM(quantity * _____), ROUND(AVG(_____), 2) FROM trades WHERE side = '____';",
+        ],
+        alternativas: ["SELECT COUNT(trade_id), SUM(price * quantity), ROUND(AVG(price), 2) FROM trades WHERE side = 'sell';"],
+        incorrectas: [
+          {
+            codigo: 'SELECT COUNT(*), SUM(quantity * price), ROUND(AVG(price), 2) FROM trades;',
+            retro: "WHERE side = 'sell'",
+          },
+          {
+            codigo: "SELECT SUM(quantity * price), COUNT(*), ROUND(AVG(price), 2) FROM trades WHERE side = 'sell';",
+            retro: 'en este orden',
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',

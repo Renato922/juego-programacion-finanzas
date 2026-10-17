@@ -7,7 +7,7 @@ export default {
   resumen: 'if / elif / else, comparaciones y break: clasificar deudores y un stop-loss.',
   pista: 'python',
   lenguaje: 'python',
-  duracion: '8 min',
+  duracion: '11 min',
   requiere: ['py-04'],
   nivelDiagnostico: 5,
   conceptos: ['py.condicionales', 'fin.riesgo_credito', 'fin.stop_loss'],
@@ -153,6 +153,66 @@ export default {
       ],
       explicacion:
         '`stop_price = buy_price * 0.8` da 9.584 (80% de 11.98). El bucle recorre las posiciones `i` de 0 a 11; en la primera donde `prices[i] <= stop_price`, guarda `sell_month = i + 1` y `break` detiene el bucle. Julio (posición 6, precio 9.48) es el primer cierre que cumple la regla, así que `sell_month` vale 7.\n\nSin `break`, el bucle sigue y `sell_month` termina con el **último** mes que cumple (diciembre, 12). Y sin el `+ 1` obtendrías 6, que es la posición y no el mes.',
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'py-05-jefe',
+      jefe: {
+        nombre: 'Gonzalo Vega',
+        sprite: 'vega',
+        provocacion: 'Yo opero por instinto: compro cuando lo siento. ¿Reglas? Las reglas son para los que no tienen olfato.',
+        derrota: 'Vendía en abril con tu regla… y me habría ahorrado la caída de junio. Bueno, quizá las reglas sirven.',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'py-05-jefe-e1',
+        concepto: 'py.condicionales',
+        lenguaje: 'python',
+        enunciado:
+          'Ponle reglas al instinto de Gonzalo. Para cada retorno mensual de `returns`, agrega a la lista `signals` el texto `"buy"` si es **mayor** a 0.03, `"sell"` si es **menor** a -0.05 y `"hold"` en cualquier otro caso.\n\nAdemás, guarda en `first_alert` el **número de mes** (1 = enero) del primer retorno menor a -0.05. Usa `break` para quedarte con el primero.',
+        inicial: 'returns = [0.02, -0.01, 0.035, -0.06, 0.01, -0.09, 0.04]\nsignals = []\nfirst_alert = None\n',
+        solucion:
+          'returns = [0.02, -0.01, 0.035, -0.06, 0.01, -0.09, 0.04]\nsignals = []\nfirst_alert = None\nfor r in returns:\n    if r > 0.03:\n        signals.append("buy")\n    elif r < -0.05:\n        signals.append("sell")\n    else:\n        signals.append("hold")\nfor i in range(len(returns)):\n    if returns[i] < -0.05:\n        first_alert = i + 1\n        break\nprint(signals, first_alert)',
+        verificar: [
+          {
+            tipo: 'variable',
+            nombre: 'signals',
+            ayuda: 'Un texto por mes (7 en total): if r > 0.03 → "buy", elif r < -0.05 → "sell", else → "hold". Los textos van entre comillas.',
+          },
+          {
+            tipo: 'variable',
+            nombre: 'first_alert',
+            ayuda: 'Guarda el número de mes, no la posición (first_alert = i + 1), y pon break justo después para quedarte con el primero.',
+          },
+        ],
+        explicacion:
+          "El primer bucle decide una sola señal por mes con `if / elif / else`: `['hold', 'hold', 'buy', 'sell', 'hold', 'sell', 'buy']`. El segundo recorre las posiciones y, en la primera donde el retorno es menor a -0.05 (posición 3, −6%), guarda `i + 1` = 4 (abril) y corta con `break`.\n\nSin `break`, `first_alert` terminaría en 6 (el último mes que cumple). Y sin el `+ 1` obtendrías la posición, no el mes.",
+        pistas: [
+          'Son dos bucles: uno para las señales (if / elif / else) y otro para la primera alerta (con break).',
+          'for r in returns:  con if r > 0.03 / elif r < -0.05 / else.  Y luego  for i in range(len(returns)):',
+          'for i in range(len(returns)):\n    if returns[i] < -0.05:\n        first_alert = i + ___\n        ______',
+        ],
+        alternativas: [
+          'returns = [0.02, -0.01, 0.035, -0.06, 0.01, -0.09, 0.04]\nsignals = []\nfirst_alert = None\nfor i in range(len(returns)):\n    r = returns[i]\n    if r > 0.03:\n        signals.append("buy")\n    elif r < -0.05:\n        signals.append("sell")\n        if first_alert is None:\n            first_alert = i + 1\n    else:\n        signals.append("hold")',
+        ],
+        incorrectas: [
+          {
+            codigo:
+              'returns = [0.02, -0.01, 0.035, -0.06, 0.01, -0.09, 0.04]\nsignals = []\nfirst_alert = None\nfor r in returns:\n    if r > 0.03:\n        signals.append("buy")\n    elif r < -0.05:\n        signals.append("sell")\n    else:\n        signals.append("hold")\nfor i in range(len(returns)):\n    if returns[i] < -0.05:\n        first_alert = i + 1',
+            retro: 'break justo después',
+          },
+          {
+            codigo:
+              'returns = [0.02, -0.01, 0.035, -0.06, 0.01, -0.09, 0.04]\nsignals = []\nfirst_alert = None\nfor r in returns:\n    if r > 0.03:\n        signals.append("buy")\n    elif r < -0.05:\n        signals.append("sell")\n    else:\n        signals.append("hold")\nfor i in range(len(returns)):\n    if returns[i] < -0.05:\n        first_alert = i\n        break',
+            retro: 'first_alert = i + 1',
+          },
+          {
+            codigo:
+              'returns = [0.02, -0.01, 0.035, -0.06, 0.01, -0.09, 0.04]\nsignals = []\nfirst_alert = None\nfor r in returns:\n    if r > 0.03:\n        signals.append("buy")\n    elif r < -0.05:\n        signals.append("sell")\nfor i in range(len(returns)):\n    if returns[i] < -0.05:\n        first_alert = i + 1\n        break',
+            retro: '7 en total',
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',

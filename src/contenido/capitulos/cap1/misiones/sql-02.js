@@ -7,7 +7,7 @@ export default {
   resumen: 'WHERE, AND, OR, IN y BETWEEN.',
   pista: 'sql',
   lenguaje: 'sql',
-  duracion: '8 min',
+  duracion: '11 min',
   requiere: ['sql-01'],
   nivelDiagnostico: 2,
   conceptos: ['sql.where'],
@@ -182,6 +182,62 @@ export default {
           retro: "'2025-03-31'",
         },
       ],
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'sql-02-jefe',
+      jefe: {
+        nombre: 'Rita Ledesma',
+        sprite: 'ledesma',
+        provocacion: 'Necesito las compras medianas de CND y PAC. Ni más, ni menos. Un filtro mal puesto y el reporte no sirve.',
+        derrota: 'Cinco filas exactas. Así se filtra.',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'sql-02-jefe-e1',
+        concepto: 'sql.where',
+        lenguaje: 'sql',
+        db: 'fondo',
+        enunciado:
+          "Muestra `trade_id`, `ticker` y `quantity` de las **compras** (`side = 'buy'`) de `'CND'` o `'PAC'` con **entre 100 y 500** unidades (ambos incluidos). Usa `IN` y `BETWEEN`.",
+        inicial: '',
+        solucion: "SELECT trade_id, ticker, quantity FROM trades WHERE side = 'buy' AND ticker IN ('CND', 'PAC') AND quantity BETWEEN 100 AND 500;",
+        opciones: {
+          verificar: [
+            {
+              tipo: 'codigoIncluye',
+              patron: '\\bIN\\s*\\(',
+              banderas: 'i',
+              mensaje: 'Usa IN (...) para los tickers.',
+            },
+            {
+              tipo: 'codigoIncluye',
+              patron: '\\bBETWEEN\\b',
+              banderas: 'i',
+              mensaje: 'Usa BETWEEN ... AND ... para las cantidades.',
+            },
+          ],
+          ayuda: "Son tres condiciones unidas con AND: side = 'buy', ticker IN ('CND', 'PAC') y quantity BETWEEN 100 AND 500.",
+        },
+        explicacion:
+          "Las tres condiciones se unen con `AND` porque las filas deben cumplirlas todas: ser compra, ser de CND o PAC y tener entre 100 y 500 unidades. `BETWEEN` incluye los extremos, así que entran las operaciones de exactamente 100 y 500 unidades. Quedan 5 filas.\n\nSin `side = 'buy'` se cuela una venta de PAC de 200 unidades.",
+        pistas: [
+          'Necesitas tres condiciones en el WHERE, unidas con AND.',
+          "WHERE side = 'buy' AND ticker IN (...) AND quantity BETWEEN ... AND ...",
+          "SELECT trade_id, ticker, quantity FROM trades WHERE side = '___' AND ticker IN ('___', '___') AND quantity BETWEEN ___ AND ___;",
+        ],
+        alternativas: ["SELECT trade_id, ticker, quantity FROM trades WHERE ticker IN ('PAC', 'CND') AND quantity BETWEEN 100 AND 500 AND side = 'buy';"],
+        incorrectas: [
+          {
+            codigo: "SELECT trade_id, ticker, quantity FROM trades WHERE ticker IN ('CND', 'PAC') AND quantity BETWEEN 100 AND 500;",
+            retro: "side = 'buy'",
+          },
+          {
+            codigo: "SELECT trade_id, ticker, quantity FROM trades WHERE side = 'buy' AND ticker IN ('cnd', 'pac') AND quantity BETWEEN 100 AND 500;",
+            retro: "('CND', 'PAC')",
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',

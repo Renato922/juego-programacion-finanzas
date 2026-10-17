@@ -7,7 +7,7 @@ export default {
   resumen: 'Diccionarios: valor de la cartera, pesos y retorno esperado.',
   pista: 'python',
   lenguaje: 'python',
-  duracion: '9 min',
+  duracion: '12 min',
   requiere: ['py-06'],
   nivelDiagnostico: 7,
   conceptos: ['py.diccionarios', 'fin.portafolio'],
@@ -177,6 +177,70 @@ export default {
       alternativas: [
         'weights = {"CND": 0.4, "PAC": 0.25, "QTZ": 0.15, "BTP": 0.2}\nexpected_returns = {"CND": 0.12, "PAC": 0.09, "QTZ": 0.15, "BTP": 0.05}\nportfolio_return = sum(weights[t] * expected_returns[t] for t in weights)',
       ],
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'py-07-jefe',
+      jefe: {
+        nombre: 'Gonzalo Vega',
+        sprite: 'vega',
+        provocacion: 'Mi posición más grande es LLM: tengo 200 acciones. Eso es lo que más pesa en mi cartera, obvio.',
+        derrota: 'CND vale 6506 y LLM solo 1620… Contar acciones no es medir el valor. Touché, {nombre}.',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'py-07-jefe-e1',
+        concepto: 'py.diccionarios',
+        lenguaje: 'python',
+        enunciado:
+          'Revisa la cartera de Gonzalo. Crea:\n\n- `values`: un diccionario `ticker → cantidad × precio`;\n- `total`: la suma de esos valores;\n- `largest`: el ticker de la posición con **mayor valor** (no con más acciones). Búscalo con un bucle y un `if`.',
+        inicial:
+          'holdings = {"CND": 100, "LLM": 200, "PAC": 50}\nprices = {"CND": 65.06, "LLM": 8.1, "PAC": 78.59}\n\nvalues = {}\ntotal = 0\nlargest = None\n',
+        solucion:
+          'holdings = {"CND": 100, "LLM": 200, "PAC": 50}\nprices = {"CND": 65.06, "LLM": 8.1, "PAC": 78.59}\n\nvalues = {}\ntotal = 0\nlargest = None\nfor ticker, qty in holdings.items():\n    values[ticker] = qty * prices[ticker]\n    total = total + values[ticker]\nbest = 0\nfor ticker, value in values.items():\n    if value > best:\n        best = value\n        largest = ticker\nprint(values, total, largest)',
+        verificar: [
+          {
+            tipo: 'variable',
+            nombre: 'values',
+            tol: 0.000001,
+            ayuda: 'Dentro de un for sobre holdings.items(): values[ticker] = qty * prices[ticker].',
+          },
+          {
+            tipo: 'variable',
+            nombre: 'total',
+            tol: 0.000001,
+            ayuda: 'total suma los valores (cantidad × precio) de las tres posiciones, no las cantidades.',
+          },
+          {
+            tipo: 'variable',
+            nombre: 'largest',
+            ayuda:
+              'Recorre values y guarda el ticker cuando su valor supere al mayor visto hasta ahora. Compara valores (cantidad × precio), no cantidades de acciones.',
+          },
+        ],
+        explicacion:
+          'El primer bucle arma `values` con cantidad × precio: CND 6506.0, LLM 1620.0 y PAC 3929.5, y acumula `total` = 12055.5. El segundo recorre `values` guardando el ticker cada vez que aparece un valor mayor que el mejor visto: el ganador es **CND**.\n\nLLM tiene más acciones (200), pero cada una vale 8.1: en una cartera lo que pesa es el valor, no la cantidad de acciones.',
+        pistas: [
+          'Son dos pasos: construir values con un for sobre holdings.items(), y luego buscar el mayor con otro for y un if.',
+          'Para buscar el mayor, guarda el mejor valor visto (best = 0) y, si value > best, actualiza best y largest.',
+          'for ticker, value in values.items():\n    if value > ____:\n        best = value\n        largest = ______',
+        ],
+        alternativas: [
+          'holdings = {"CND": 100, "LLM": 200, "PAC": 50}\nprices = {"CND": 65.06, "LLM": 8.1, "PAC": 78.59}\nvalues = {t: holdings[t] * prices[t] for t in holdings}\ntotal = sum(values.values())\nlargest = max(values, key=values.get)',
+        ],
+        incorrectas: [
+          {
+            codigo:
+              'holdings = {"CND": 100, "LLM": 200, "PAC": 50}\nprices = {"CND": 65.06, "LLM": 8.1, "PAC": 78.59}\nvalues = {}\ntotal = 0\nlargest = None\nfor ticker, qty in holdings.items():\n    values[ticker] = qty * prices[ticker]\n    total = total + values[ticker]\nbest = 0\nfor ticker, qty in holdings.items():\n    if qty > best:\n        best = qty\n        largest = ticker',
+            retro: 'no cantidades de acciones',
+          },
+          {
+            codigo:
+              'holdings = {"CND": 100, "LLM": 200, "PAC": 50}\nprices = {"CND": 65.06, "LLM": 8.1, "PAC": 78.59}\nvalues = {}\ntotal = 0\nlargest = "CND"\nfor ticker, qty in holdings.items():\n    values[ticker] = qty * prices[ticker]\n    total = total + qty',
+            retro: 'no las cantidades',
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',

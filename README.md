@@ -7,7 +7,10 @@ Empiezas como Analista Junior en un fondo de inversión. Cada reto resuelto te d
 > **Versión 0.1:** está completo el **capítulo 1** (Python y SQL desde cero, 13 misiones y un jefe). Los capítulos con R, Power BI y Excel/VBA están planificados en [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Qué incluye
-- **Historia de carrera + tycoon:** misiones de 5 a 10 minutos, un jefe por capítulo, capital, mejoras de oficina en pixel art y un fondo con perfil de riesgo.
+- **Historia de carrera + tycoon:** misiones de 8 a 13 minutos, capital, mejoras de oficina en pixel art y un fondo con perfil de riesgo.
+- **Jefes:** cada misión termina con un **jefe del día** y cada capítulo con un **jefe de capítulo**. En los jefes tienes **3 vidas**: cada comprobación fallida cuesta una; ejecutar y pedir pistas no. Sin vidas, reintentas al instante sin perder nada.
+- **Barra de dominio** (estilo ALEKS): equivocarte la hace retroceder un paso y te agrega un ejercicio de refuerzo del mismo tema antes del jefe del día.
+- **Menú principal** con 3 ranuras de partida: continuar, nueva partida, cargar partida e importar un respaldo.
 - **Test de nivel** que te salta lo que ya sabes.
 - **Python real** (Pyodide) y **SQL real** (SQLite con sql.js) dentro del juego, con errores explicados en español y pistas que escalan.
 - **Sala de trading:** entrenamiento con repaso espaciado, combos y potenciadores.
@@ -75,13 +78,15 @@ Abre <http://localhost:5178>. Es el mismo juego; Python se carga desde `node_mod
 npm test
 ```
 Las pruebas comprueban:
-- el repaso espaciado, la economía, la validación de respuestas, el progreso, el test de nivel, las batallas, el entrenamiento y los mensajes de regreso;
+- el repaso espaciado, la economía, la validación de respuestas, el progreso, el test de nivel, las batallas y sus vidas, la barra de dominio, las ranuras de partida, el entrenamiento y los mensajes de regreso;
 - **cada ejercicio del juego, ejecutado de verdad** en Pyodide y sql.js: la solución pasa, el código inicial no pasa, las soluciones alternativas pasan y las respuestas incorrectas conocidas fallan.
 
 ## Dónde se guarda tu progreso
-- **App de escritorio:** en la carpeta de datos de la app (normalmente `%APPDATA%\Condor Capital\partida\progreso.json`), con una copia `.bak` del guardado anterior.
+- **App de escritorio:** en la carpeta de datos de la app, un archivo por ranura (`ranura-1.json` a `ranura-3.json`), con una copia `.bak` del guardado anterior. En Windows suele ser `%APPDATA%\Condor Capital\partida\`; en Mac, `~/Library/Application Support/Condor Capital/partida/`.
+- Si ya tenías una partida de una versión anterior (`progreso.json`), aparece sola en la **ranura 1**.
+- Borrar una partida desde el menú no destruye el archivo: queda como `ranura-N.borrada.json` por si quieres recuperarla.
 - **Modo navegador:** en el `localStorage` del navegador.
-- En **Ajustes** puedes exportar e importar un respaldo.
+- En el menú principal puedes importar un respaldo y en **Ajustes** exportarlo.
 
 ## R, RStudio, Excel y Power BI
 Los jefes de R, Power BI y Excel/VBA se juegan en los programas reales. En la sección **Herramientas** el juego te guía para instalar **R** y **RStudio Desktop** (ambos gratis) y verifica la instalación. Excel de escritorio y Power BI Desktop (gratis) los usarás desde el capítulo 3.

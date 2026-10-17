@@ -18,7 +18,9 @@ Cada misión, por concepto nuevo:
 2. **Práctica guiada** (`id: '<mision>-pN'`): el código inicial ya trae la estructura y deja huecos `___` para completar. Es un ejercicio corto, del mismo tipo que el ejemplo.
 3. **Ejercicio** independiente (el que ya existía), con menos andamiaje.
 
-Las misiones siguen durando de 5 a 10 minutos. Si se agregan pasos, hay que actualizar `duracion`.
+4. **Jefe del día** (`tipo: 'jefeDia'`, id `'<mision>-jefe'`), justo antes del diálogo de cierre: un solo ejercicio (`paso`, id `'<mision>-jefe-e1'`) que combina lo del día, con las mismas reglas de la sección 4. Lleva `jefe: { nombre, sprite, provocacion, derrota }`. El rival provoca sin humillar: nunca se burla del jugador.
+
+Las misiones duran de 5 a 13 minutos, contando unos 3 del jefe del día. Si se agregan pasos, hay que actualizar `duracion`.
 
 ## 4. Campos obligatorios de cada ejercicio
 | Campo | Regla |

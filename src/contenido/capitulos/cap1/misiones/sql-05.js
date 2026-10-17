@@ -7,7 +7,7 @@ export default {
   resumen: 'GROUP BY y HAVING, con datos reales de Grunfeld.',
   pista: 'sql',
   lenguaje: 'sql',
-  duracion: '9 min',
+  duracion: '12 min',
   requiere: ['sql-04'],
   nivelDiagnostico: 5,
   conceptos: ['sql.groupby', 'sql.having'],
@@ -182,6 +182,61 @@ export default {
           retro: 'Revisa tu ORDER BY',
         },
       ],
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'sql-05-jefe',
+      jefe: {
+        nombre: 'Rita Ledesma',
+        sprite: 'ledesma',
+        provocacion: 'El comité quiere saber en qué activos el fondo compró fuerte. Más de 400 unidades. Agrupado, filtrado y ordenado.',
+        derrota: 'Siete activos, y PMP con 400 justas queda fuera. Ese detalle del "más de" lo pierde mucha gente.',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'sql-05-jefe-e1',
+        concepto: 'sql.having',
+        lenguaje: 'sql',
+        db: 'fondo',
+        enunciado:
+          "Para cada `ticker`, muestra las unidades **compradas** (`side = 'buy'`) con `SUM(quantity) AS units`. Quédate solo con los tickers que suman **más de 400** unidades y ordénalos de mayor a menor.",
+        inicial: '',
+        solucion: "SELECT ticker, SUM(quantity) AS units FROM trades WHERE side = 'buy' GROUP BY ticker HAVING SUM(quantity) > 400 ORDER BY units DESC;",
+        opciones: {
+          ordenImporta: true,
+          verificar: [
+            {
+              tipo: 'codigoIncluye',
+              patron: '\\bHAVING\\b',
+              banderas: 'i',
+              mensaje: 'Filtra los grupos con HAVING.',
+            },
+          ],
+          ayuda: "WHERE side = 'buy' filtra filas antes de agrupar; HAVING SUM(quantity) > 400 filtra grupos después. «Más de 400» es > 400, no >= 400.",
+        },
+        explicacion:
+          "`WHERE side = 'buy'` deja solo las compras; `GROUP BY ticker` suma las unidades de cada activo; `HAVING SUM(quantity) > 400` descarta los grupos chicos y `ORDER BY units DESC` ordena. Quedan 7 activos, de BTP (2500) a LLM (500).\n\nPMP suma exactamente 400: con `>= 400` se colaría. Y la condición sobre la suma va en HAVING porque en WHERE la suma todavía no existe.",
+        pistas: [
+          'Usa todo lo de la misión: WHERE, GROUP BY, HAVING y ORDER BY, en ese orden.',
+          "WHERE side = 'buy' GROUP BY ticker HAVING SUM(quantity) > 400 ORDER BY units DESC",
+          "SELECT ticker, SUM(quantity) AS units FROM trades WHERE side = 'buy' GROUP BY ______ HAVING SUM(quantity) > ___ ORDER BY _____ DESC;",
+        ],
+        alternativas: ["SELECT ticker, SUM(quantity) AS units FROM trades WHERE side = 'buy' GROUP BY ticker HAVING units > 400 ORDER BY units DESC;"],
+        incorrectas: [
+          {
+            codigo: "SELECT ticker, SUM(quantity) AS units FROM trades WHERE side = 'buy' GROUP BY ticker HAVING SUM(quantity) >= 400 ORDER BY units DESC;",
+            retro: 'no >= 400',
+          },
+          {
+            codigo: "SELECT ticker, SUM(quantity) AS units FROM trades WHERE side = 'buy' AND SUM(quantity) > 400 GROUP BY ticker ORDER BY units DESC;",
+            retro: 'usa HAVING',
+          },
+          {
+            codigo: 'SELECT ticker, SUM(quantity) AS units FROM trades GROUP BY ticker HAVING SUM(quantity) > 400 ORDER BY units DESC;',
+            retro: "WHERE side = 'buy'",
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',

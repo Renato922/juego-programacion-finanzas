@@ -96,5 +96,5 @@ export const CATALOGO = {
 // Todos los pasos evaluables (ejercicios y quizzes) de una misión o jefe.
 export function pasosEvaluables(mision) {
   if (mision.tipo === 'jefe') return mision.fases.map((f) => f.paso);
-  return mision.pasos.filter((p) => p.tipo === 'ejercicio' || p.tipo === 'quiz');
+  return mision.pasos.flatMap((p) => (p.tipo === 'ejercicio' || p.tipo === 'quiz' ? [p] : p.tipo === 'jefeDia' ? [p.paso] : []));
 }

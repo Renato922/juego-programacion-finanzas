@@ -7,7 +7,7 @@ export default {
   resumen: 'SELECT, FROM, columnas calculadas y AS.',
   pista: 'sql',
   lenguaje: 'sql',
-  duracion: '6 min',
+  duracion: '9 min',
   requiere: [],
   nivelDiagnostico: 1,
   conceptos: ['sql.select', 'sql.alias'],
@@ -148,6 +148,57 @@ export default {
           retro: 'year, quarter, unemp',
         },
       ],
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'sql-01-jefe',
+      jefe: {
+        nombre: 'Rita Ledesma',
+        sprite: 'ledesma',
+        provocacion: 'Soy Rita Ledesma, jefa de datos del Banco Andino. Nuestros reportes incluyen la comisión. ¿Los suyos también?',
+        derrota: 'Cinco columnas, bien nombradas y con la comisión incluida. Nada mal para tu primera semana.',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'sql-01-jefe-e1',
+        concepto: 'sql.alias',
+        lenguaje: 'sql',
+        db: 'fondo',
+        enunciado:
+          'Muestra `trade_id`, `ticker`, `quantity`, `price` y el monto con una comisión de 1% incluida: `quantity * price * 1.01`, con el nombre `amount_with_fee`.',
+        inicial: '',
+        solucion: 'SELECT trade_id, ticker, quantity, price, quantity * price * 1.01 AS amount_with_fee FROM trades;',
+        opciones: {
+          nombresColumnas: true,
+          tol: {
+            abs: 0.001,
+            rel: 1e-9,
+          },
+          ayuda: 'Son 5 columnas separadas por comas; la última es quantity * price * 1.01 AS amount_with_fee (multiplicar por 1.01 suma el 1%).',
+        },
+        explicacion:
+          'Multiplicar por 1.01 es sumar el 1%: el monto más su comisión. `AS amount_with_fee` le pone el nombre pedido a esa columna calculada, y las otras cuatro salen tal cual de `trades`.\n\nEl error típico es multiplicar por 0.01: eso da solo la comisión, no el monto con la comisión.',
+        pistas: [
+          'Es un SELECT con cinco columnas: cuatro de la tabla y una calculada con alias.',
+          'La columna calculada es quantity * price * 1.01 y se nombra con AS.',
+          'SELECT trade_id, ticker, quantity, price, quantity * price * ____ AS _______________ FROM trades;',
+        ],
+        alternativas: ['SELECT trade_id, ticker, quantity, price, (quantity * price) * 1.01 AS amount_with_fee FROM trades;'],
+        incorrectas: [
+          {
+            codigo: 'SELECT trade_id, ticker, quantity, price, quantity * price * 1.01 FROM trades;',
+            retro: 'Usa AS',
+          },
+          {
+            codigo: 'SELECT trade_id, ticker, quantity, price, quantity * price * 0.01 AS amount_with_fee FROM trades;',
+            retro: 'multiplicar por 1.01',
+          },
+          {
+            codigo: 'SELECT trade_id, ticker, quantity * price * 1.01 AS amount_with_fee FROM trades;',
+            retro: 'Son 5 columnas',
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',

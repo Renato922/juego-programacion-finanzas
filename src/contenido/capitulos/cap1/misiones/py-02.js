@@ -7,7 +7,7 @@ export default {
   resumen: 'Potencias, round(), f-strings y el módulo math.',
   pista: 'python',
   lenguaje: 'python',
-  duracion: '10 min',
+  duracion: '13 min',
   requiere: ['py-01'],
   nivelDiagnostico: 2,
   conceptos: ['py.potencias', 'py.fstrings', 'py.import', 'fin.interes_compuesto', 'fin.regla72'],
@@ -33,13 +33,7 @@ export default {
       tipo: 'leccion',
       titulo: 'Interés compuesto en Python',
       texto:
-        'La fórmula del **valor futuro** es `VF = VP × (1 + r)^n`: VP es el valor presente (lo que inviertes hoy), r es la tasa anual en decimal y n son los años.\n\n' +
-        'En Python la potencia se escribe con dos asteriscos: `(1 + rate) ** years` significa "(1 + rate) elevado a years". Ojo: `^` no es potencia en Python. Con decimales da error y con enteros da otro número (`2 ^ 3` da 1, no 8).\n\n' +
-        'Los paréntesis importan, porque Python calcula la potencia antes que la suma:\n\n' +
-        '- `(1 + rate) ** years` suma primero y después eleva. Es lo correcto.\n' +
-        '- `1 + rate ** years` eleva solo rate y después suma 1. Da otro número.\n\n' +
-        '`round(valor, 2)` devuelve el valor redondeado a 2 decimales: el primer dato es el número y el segundo, cuántos decimales quieres. Puedes guardar el resultado en la misma variable: `future_value = round(future_value, 2)` toma el valor actual, lo redondea y lo guarda otra vez.\n\n' +
-        '`print(future_value)` muestra el valor de la variable en la consola. Lo que quieres ver va **dentro** de los paréntesis; un `print()` vacío solo imprime una línea en blanco.',
+        'La fórmula del **valor futuro** es `VF = VP × (1 + r)^n`: VP es el valor presente (lo que inviertes hoy), r es la tasa anual en decimal y n son los años.\n\nEn Python la potencia se escribe con dos asteriscos: `(1 + rate) ** years` significa "(1 + rate) elevado a years". Ojo: `^` no es potencia en Python. Con decimales da error y con enteros da otro número (`2 ^ 3` da 1, no 8).\n\nLos paréntesis importan, porque Python calcula la potencia antes que la suma:\n\n- `(1 + rate) ** years` suma primero y después eleva. Es lo correcto.\n- `1 + rate ** years` eleva solo rate y después suma 1. Da otro número.\n\n`round(valor, 2)` devuelve el valor redondeado a 2 decimales: el primer dato es el número y el segundo, cuántos decimales quieres. Puedes guardar el resultado en la misma variable: `future_value = round(future_value, 2)` toma el valor actual, lo redondea y lo guarda otra vez.\n\n`print(future_value)` muestra el valor de la variable en la consola. Lo que quieres ver va **dentro** de los paréntesis; un `print()` vacío solo imprime una línea en blanco.',
       codigo:
         'present_value = 1000   # lo que inviertes hoy\nrate = 0.07            # 7% anual, en decimal\nyears = 5\nfuture_value = present_value * (1 + rate) ** years\nfuture_value = round(future_value, 2)\nprint(future_value)    # 1402.55',
       lenguaje: 'python',
@@ -52,10 +46,7 @@ export default {
       opciones: ['(1 + rate) ^ years', '(1 + rate) ** years', '1 + rate ** years', '(1 + rate) * years'],
       correcta: 1,
       explicacion:
-        'La correcta es `(1 + rate) ** years`: la potencia se escribe con dos asteriscos, y los paréntesis hacen que primero se sume 1 + rate.\n\n' +
-        '- `^` es tentador porque en Excel sí es potencia, pero en Python es otra operación: con decimales da error y con enteros da un número equivocado (`2 ^ 3` da 1).\n' +
-        '- Sin paréntesis, Python eleva solo `rate` y después suma 1.\n' +
-        '- Con un solo asterisco `*` multiplicas por years, no elevas.',
+        'La correcta es `(1 + rate) ** years`: la potencia se escribe con dos asteriscos, y los paréntesis hacen que primero se sume 1 + rate.\n\n- `^` es tentador porque en Excel sí es potencia, pero en Python es otra operación: con decimales da error y con enteros da un número equivocado (`2 ^ 3` da 1).\n- Sin paréntesis, Python eleva solo `rate` y después suma 1.\n- Con un solo asterisco `*` multiplicas por years, no elevas.',
     },
     {
       tipo: 'ejercicio',
@@ -69,9 +60,7 @@ export default {
       solucion:
         'present_value = 2000\nrate = 0.05\nyears = 3\n\nfuture_value = present_value * (1 + rate) ** years\nfuture_value = round(future_value, 2)\nprint(future_value)',
       explicacion:
-        '`(1 + rate)` es lo que crece tu dinero en un año: 1.05 significa "lo que tenías más un 5%". Elevarlo a `years` con dos asteriscos aplica ese crecimiento 3 veces seguidas: 2000 × 1.05 × 1.05 × 1.05.\n\n' +
-        '`round(future_value, 2)` deja el resultado con 2 decimales, 2315.25, y `print(future_value)` lo muestra.\n\n' +
-        'Error típico: escribir 5 en lugar de `rate`. La tasa siempre va en decimal (0.05); por eso se usa la variable `rate`.',
+        '`(1 + rate)` es lo que crece tu dinero en un año: 1.05 significa "lo que tenías más un 5%". Elevarlo a `years` con dos asteriscos aplica ese crecimiento 3 veces seguidas: 2000 × 1.05 × 1.05 × 1.05.\n\n`round(future_value, 2)` deja el resultado con 2 decimales, 2315.25, y `print(future_value)` lo muestra.\n\nError típico: escribir 5 en lugar de `rate`. La tasa siempre va en decimal (0.05); por eso se usa la variable `rate`.',
       verificar: [
         {
           tipo: 'variable',
@@ -134,9 +123,7 @@ export default {
       solucion:
         'present_value = 5000\nrate = 0.06\nyears = 10\n\nfuture_value = present_value * (1 + rate) ** years\nfuture_value = round(future_value, 2)\nprint(future_value)',
       explicacion:
-        'Primero se calcula el crecimiento: `(1 + rate)` vale 1.06, y elevarlo a `years` lo aplica 10 años seguidos. Multiplicado por `present_value` da 8954.2384…, y `round(future_value, 2)` lo deja en 8954.24.\n\n' +
-        'Después, `print(future_value)` muestra ese valor; con un `print()` vacío no verías nada.\n\n' +
-        'Errores típicos: olvidar los paréntesis, porque sin ellos Python eleva solo la tasa, o multiplicar `rate * years`, que es interés simple y da 8000.',
+        'Primero se calcula el crecimiento: `(1 + rate)` vale 1.06, y elevarlo a `years` lo aplica 10 años seguidos. Multiplicado por `present_value` da 8954.2384…, y `round(future_value, 2)` lo deja en 8954.24.\n\nDespués, `print(future_value)` muestra ese valor; con un `print()` vacío no verías nada.\n\nErrores típicos: olvidar los paréntesis, porque sin ellos Python eleva solo la tasa, o multiplicar `rate * years`, que es interés simple y da 8000.',
       verificar: [
         {
           tipo: 'variable',
@@ -205,13 +192,7 @@ export default {
       tipo: 'leccion',
       titulo: 'f-strings: mostrar números como en un informe',
       texto:
-        'Un **f-string** es un texto entre comillas con una `f` pegada delante: `f"..."`. Lo que pongas entre llaves `{}` se reemplaza por su valor. Sin la `f`, Python imprime las llaves tal cual.\n\n' +
-        'Dentro de las llaves puedes agregar dos puntos `:` y un formato después de la variable:\n\n' +
-        '- `{value:,.2f}`: la coma agrega el separador de miles y `.2f` deja 2 decimales. 1402.5517 se ve como 1,402.55.\n' +
-        '- `{rate:.1%}`: el `%` multiplica por 100 y agrega el signo, y `.1` deja 1 decimal. 0.07 se ve como 7.0%.\n\n' +
-        'El número después del punto es la cantidad de decimales: `.0%` da 7%, `.1%` da 7.0% y `.2%` da 7.00%. No multipliques por 100 tú: el `%` del formato ya lo hace.\n\n' +
-        'Ojo: en la misión anterior viste que `%` da el resto de una división. En las cuentas sigue siendo así (`17 % 5` da 2). Solo dentro de las llaves de un f-string, después de los dos puntos, `%` significa "muéstralo como porcentaje".\n\n' +
-        'El `$` que va antes de la llave es texto normal, igual que "Valor futuro:". Prueba el ejemplo: la última línea muestra qué pasa si olvidas la `f`.',
+        'Un **f-string** es un texto entre comillas con una `f` pegada delante: `f"..."`. Lo que pongas entre llaves `{}` se reemplaza por su valor. Sin la `f`, Python imprime las llaves tal cual.\n\nDentro de las llaves puedes agregar dos puntos `:` y un formato después de la variable:\n\n- `{value:,.2f}`: la coma agrega el separador de miles y `.2f` deja 2 decimales. 1402.5517 se ve como 1,402.55.\n- `{rate:.1%}`: el `%` multiplica por 100 y agrega el signo, y `.1` deja 1 decimal. 0.07 se ve como 7.0%.\n\nEl número después del punto es la cantidad de decimales: `.0%` da 7%, `.1%` da 7.0% y `.2%` da 7.00%. No multipliques por 100 tú: el `%` del formato ya lo hace.\n\nOjo: en la misión anterior viste que `%` da el resto de una división. En las cuentas sigue siendo así (`17 % 5` da 2). Solo dentro de las llaves de un f-string, después de los dos puntos, `%` significa "muéstralo como porcentaje".\n\nEl `$` que va antes de la llave es texto normal, igual que "Valor futuro:". Prueba el ejemplo: la última línea muestra qué pasa si olvidas la `f`.',
       codigo:
         'value = 1402.5517\nrate = 0.07\nprint(f"Valor futuro: ${value:,.2f}")   # Valor futuro: $1,402.55\nprint(f"Tasa: {rate:.1%}")              # Tasa: 7.0%\nprint("Tasa: {rate:.1%}")               # sin f: Tasa: {rate:.1%}',
       lenguaje: 'python',
@@ -222,15 +203,11 @@ export default {
       concepto: 'py.fstrings',
       lenguaje: 'python',
       enunciado:
-        'Práctica guiada. Completa cada hueco `___` con la variable, dos puntos y el formato, como en `{value:,.2f}`. El código debe imprimir exactamente estas dos líneas:\n\n' +
-        '`Cartera: $25,890.46`\n`Comisión: 1.5%`\n\n' +
-        'El monto lleva separador de miles y 2 decimales; la comisión es un porcentaje con 1 decimal.',
+        'Práctica guiada. Completa cada hueco `___` con la variable, dos puntos y el formato, como en `{value:,.2f}`. El código debe imprimir exactamente estas dos líneas:\n\n`Cartera: $25,890.46`\n`Comisión: 1.5%`\n\nEl monto lleva separador de miles y 2 decimales; la comisión es un porcentaje con 1 decimal.',
       inicial: 'portfolio_value = 25890.456\nfee_rate = 0.015\n\n# En cada hueco: variable:formato\nprint(f"Cartera: ${___}")\nprint(f"Comisión: {___}")\n',
       solucion: 'portfolio_value = 25890.456\nfee_rate = 0.015\n\nprint(f"Cartera: ${portfolio_value:,.2f}")\nprint(f"Comisión: {fee_rate:.1%}")',
       explicacion:
-        'Cada hueco sigue la forma `{variable:formato}`. En `{portfolio_value:,.2f}`, la coma agrega el separador de miles y `.2f` redondea a 2 decimales: 25890.456 se muestra como 25,890.46.\n\n' +
-        'En `{fee_rate:.1%}`, el `%` multiplica 0.015 por 100 y agrega el signo, y `.1` deja un decimal: 1.5%. El `$` antes de la llave es texto normal.\n\n' +
-        'Error típico: poner solo `{fee_rate}`, que muestra 0.015 en lugar de 1.5%.',
+        'Cada hueco sigue la forma `{variable:formato}`. En `{portfolio_value:,.2f}`, la coma agrega el separador de miles y `.2f` redondea a 2 decimales: 25890.456 se muestra como 25,890.46.\n\nEn `{fee_rate:.1%}`, el `%` multiplica 0.015 por 100 y agrega el signo, y `.1` deja un decimal: 1.5%. El `$` antes de la llave es texto normal.\n\nError típico: poner solo `{fee_rate}`, que muestra 0.015 en lugar de 1.5%.',
       verificar: [
         {
           tipo: 'salida',
@@ -275,8 +252,7 @@ export default {
       inicial: 'annual_return = 0.125\n\n# Escribe tu print debajo\n',
       solucion: 'annual_return = 0.125\n\nprint(f"Rendimiento anual: {annual_return:.2%}")',
       explicacion:
-        'La `f` pegada a las comillas hace que Python reemplace lo que va entre llaves. En `{annual_return:.2%}`, el `%` multiplica 0.125 por 100 y agrega el signo, y `.2` deja dos decimales: 12.50%. Por eso no hace falta multiplicar por 100 a mano.\n\n' +
-        'Si te faltaba la `f`, verías las llaves impresas tal cual. Si usabas `.1%`, saldría 12.5% y no 12.50%.',
+        'La `f` pegada a las comillas hace que Python reemplace lo que va entre llaves. En `{annual_return:.2%}`, el `%` multiplica 0.125 por 100 y agrega el signo, y `.2` deja dos decimales: 12.50%. Por eso no hace falta multiplicar por 100 a mano.\n\nSi te faltaba la `f`, verías las llaves impresas tal cual. Si usabas `.1%`, saldría 12.5% y no 12.50%.',
       verificar: [
         {
           tipo: 'salida',
@@ -337,13 +313,7 @@ export default {
       tipo: 'leccion',
       titulo: 'La regla del 72 y el módulo math',
       texto:
-        'La **regla del 72** estima en cuántos años se duplica una inversión: divide 72 entre la tasa **en porcentaje** (8, no 0.08). Al 8% anual, `72 / 8` da 9 años, más o menos.\n\n' +
-        'La cuenta exacta usa logaritmos: `años = ln(2) / ln(1 + r)`, con r en decimal. El 2 representa "duplicar" y `1 + r` es lo que crece el dinero cada año.\n\n' +
-        'Python guarda funciones extra en **módulos**. `import math`, al inicio del código, carga el módulo de matemáticas. Sus funciones se usan con el prefijo `math.` delante:\n\n' +
-        '- `math.log(x)` es el logaritmo natural: el ln de la fórmula.\n' +
-        '- `math.sqrt(x)` es la raíz cuadrada.\n\n' +
-        'Si escribes `log(2)` sin `math.`, Python no la encuentra y da NameError.\n\n' +
-        'Para ver varios valores en una misma línea, sepáralos con comas dentro de print: `print(a, b)`.',
+        'La **regla del 72** estima en cuántos años se duplica una inversión: divide 72 entre la tasa **en porcentaje** (8, no 0.08). Al 8% anual, `72 / 8` da 9 años, más o menos.\n\nLa cuenta exacta usa logaritmos: `años = ln(2) / ln(1 + r)`, con r en decimal. El 2 representa "duplicar" y `1 + r` es lo que crece el dinero cada año.\n\nPython guarda funciones extra en **módulos**. `import math`, al inicio del código, carga el módulo de matemáticas. Sus funciones se usan con el prefijo `math.` delante:\n\n- `math.log(x)` es el logaritmo natural: el ln de la fórmula.\n- `math.sqrt(x)` es la raíz cuadrada.\n\nSi escribes `log(2)` sin `math.`, Python no la encuentra y da NameError.\n\nPara ver varios valores en una misma línea, sepáralos con comas dentro de print: `print(a, b)`.',
       codigo:
         'import math\n\nrate = 0.08                                # 8% anual\nprint(72 / 8)                              # regla del 72: 9.0 años\nprint(math.log(2) / math.log(1 + rate))    # exacto: 9.006... años\nprint(math.log(2), math.sqrt(16))          # 0.693... 4.0',
       lenguaje: 'python',
@@ -354,16 +324,11 @@ export default {
       concepto: 'py.import',
       lenguaje: 'python',
       enunciado:
-        'La tasa ahora es **9% anual** (`rate = 0.09`). Calcula dos variables:\n\n' +
-        '- `rule_of_72`: la estimación de la regla del 72 (72 dividido entre 9).\n' +
-        '- `exact_years`: los años exactos con la fórmula `ln(2) / ln(1 + r)`, usando `math.log()`.\n\n' +
-        'Se revisan las dos variables. Si quieres verlas, usa `print(rule_of_72, exact_years)`.',
+        'La tasa ahora es **9% anual** (`rate = 0.09`). Calcula dos variables:\n\n- `rule_of_72`: la estimación de la regla del 72 (72 dividido entre 9).\n- `exact_years`: los años exactos con la fórmula `ln(2) / ln(1 + r)`, usando `math.log()`.\n\nSe revisan las dos variables. Si quieres verlas, usa `print(rule_of_72, exact_years)`.',
       inicial: 'import math\n\nrate = 0.09\n\n# Escribe tu código debajo\n',
       solucion: 'import math\n\nrate = 0.09\nrule_of_72 = 72 / 9\nexact_years = math.log(2) / math.log(1 + rate)\nprint(rule_of_72, exact_years)',
       explicacion:
-        '`rule_of_72 = 72 / 9` da 8.0, porque la regla usa la tasa en porcentaje.\n\n' +
-        'Para la cuenta exacta, `math.log` es el logaritmo natural (ln) del módulo `math`, que ya está importado en la primera línea. `math.log(2) / math.log(1 + rate)` da 8.0432…: casi lo mismo que la regla.\n\n' +
-        'Error típico: escribir `math.log(rate)` sin el 1 +, que da un número negativo. Dentro del logaritmo va lo que crece el dinero en un año (1.09), no solo la tasa.',
+        '`rule_of_72 = 72 / 9` da 8.0, porque la regla usa la tasa en porcentaje.\n\nPara la cuenta exacta, `math.log` es el logaritmo natural (ln) del módulo `math`, que ya está importado en la primera línea. `math.log(2) / math.log(1 + rate)` da 8.0432…: casi lo mismo que la regla.\n\nError típico: escribir `math.log(rate)` sin el 1 +, que da un número negativo. Dentro del logaritmo va lo que crece el dinero en un año (1.09), no solo la tasa.',
       verificar: [
         {
           tipo: 'variable',
@@ -404,6 +369,73 @@ export default {
         },
         'import math\n\nrate = 0.09\nrule_of_72 = 72 / 9\nexact_years = log(2) / log(1 + rate)',
       ],
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'py-02-jefe',
+      jefe: {
+        nombre: 'Gonzalo Vega',
+        sprite: 'vega',
+        provocacion: 'Un cliente quiere saber cuánto tendrá en 10 años. Yo le digo "mucho". ¿Tú puedes darle un número bien presentado?',
+        derrota: '26,862.72 con separador de miles. Está bien, eso se ve mejor que "mucho".',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'py-02-jefe-e1',
+        concepto: 'fin.interes_compuesto',
+        lenguaje: 'python',
+        enunciado:
+          'Un cliente deposita `capital = 15000` al `rate = 0.06` anual durante `years = 10`. Calcula:\n\n- `future_value`: el valor futuro con interés compuesto;\n- `rule_72`: los años para duplicar según la regla del 72 (72 entre la tasa **en porcentaje**).\n\nImprime exactamente: `Valor futuro: $26,862.72` (con un f-string y el formato `,.2f`).',
+        inicial: 'capital = 15000\nrate = 0.06\nyears = 10\n',
+        solucion:
+          'capital = 15000\nrate = 0.06\nyears = 10\nfuture_value = capital * (1 + rate) ** years\nrule_72 = 72 / 6\nprint(f"Valor futuro: ${future_value:,.2f}")',
+        verificar: [
+          {
+            tipo: 'variable',
+            nombre: 'future_value',
+            ayuda: 'Interés compuesto: capital * (1 + rate) ** years. La potencia en Python es **.',
+          },
+          {
+            tipo: 'variable',
+            nombre: 'rule_72',
+            ayuda: 'La regla del 72 usa la tasa en porcentaje: 72 / 6, no 72 / 0.06.',
+          },
+          {
+            tipo: 'salida',
+            modo: 'exacta',
+            etiqueta: 'imprimir el valor futuro con formato',
+            ayuda:
+              'Usa un f-string: la f va antes de las comillas y, dentro de las llaves, la variable con su formato: {future_value:,.2f}. El $ va antes de las llaves.',
+          },
+        ],
+        explicacion:
+          '`capital * (1 + rate) ** years` calcula 15000 × 1.06¹⁰ ≈ 26862.72: Python hace primero la potencia y después la multiplicación. La regla del 72 usa la tasa en porcentaje: `72 / 6` = 12 años, más o menos.\n\nEn el f-string, `{future_value:,.2f}` agrega separadores de miles y deja 2 decimales. El error típico es olvidar la `f` antes de las comillas: entonces se imprime el texto de las llaves tal cual.',
+        pistas: [
+          'Primero el valor futuro con la fórmula de interés compuesto; después la regla del 72; al final el print con f-string.',
+          'future_value = capital * (1 + rate) ** years  ·  rule_72 = 72 / 6',
+          'print(f"Valor futuro: ${____________:,.2f}")',
+        ],
+        alternativas: [
+          'capital = 15000\nrate = 0.06\nyears = 10\nfuture_value = capital * (1 + rate) ** years\nrule_72 = 72 / (rate * 100)\nprint(f"Valor futuro: ${future_value:,.2f}")',
+        ],
+        incorrectas: [
+          {
+            codigo:
+              'capital = 15000\nrate = 0.06\nyears = 10\nfuture_value = capital * (1 + rate) ^ years\nrule_72 = 72 / 6\nprint(f"Valor futuro: ${future_value:,.2f}")',
+            retro: 'la potencia es **',
+          },
+          {
+            codigo:
+              'capital = 15000\nrate = 0.06\nyears = 10\nfuture_value = capital * (1 + rate) ** years\nrule_72 = 72 / rate\nprint(f"Valor futuro: ${future_value:,.2f}")',
+            retro: 'no 72 / 0.06',
+          },
+          {
+            codigo:
+              'capital = 15000\nrate = 0.06\nyears = 10\nfuture_value = capital * (1 + rate) ** years\nrule_72 = 72 / 6\nprint("Valor futuro: ${future_value:,.2f}")',
+            retro: 'la f va antes de las comillas',
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',

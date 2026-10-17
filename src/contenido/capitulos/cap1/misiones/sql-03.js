@@ -7,7 +7,7 @@ export default {
   resumen: 'ORDER BY, DESC, LIMIT y DISTINCT.',
   pista: 'sql',
   lenguaje: 'sql',
-  duracion: '7 min',
+  duracion: '10 min',
   requiere: ['sql-02'],
   nivelDiagnostico: 3,
   conceptos: ['sql.orderby'],
@@ -128,6 +128,48 @@ export default {
           retro: 'LIMIT 3',
         },
       ],
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'sql-03-jefe',
+      jefe: {
+        nombre: 'Rita Ledesma',
+        sprite: 'ledesma',
+        provocacion: 'Mi gerente quiere los tres mejores cierres de Cóndor del año, ordenados. Y los quiere ya.',
+        derrota: 'Noviembre, diciembre y octubre. Ordenado y en una línea. Me rindo… por hoy.',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'sql-03-jefe-e1',
+        concepto: 'sql.orderby',
+        lenguaje: 'sql',
+        db: 'fondo',
+        enunciado: "Muestra `date` y `close` de los **3 cierres más altos** de CND (`ticker = 'CND'`) en la tabla `prices`, de mayor a menor.",
+        inicial: '',
+        solucion: "SELECT date, close FROM prices WHERE ticker = 'CND' ORDER BY close DESC LIMIT 3;",
+        opciones: {
+          ordenImporta: true,
+          ayuda: "Filtra con WHERE ticker = 'CND', ordena con ORDER BY close DESC y termina con LIMIT 3.",
+        },
+        explicacion:
+          "`WHERE ticker = 'CND'` deja solo los cierres de Cóndor, `ORDER BY close DESC` los ordena de mayor a menor y `LIMIT 3` se queda con los tres primeros: noviembre (65.08), diciembre (65.06) y octubre (61.62).\n\nEl orden de las cláusulas siempre es WHERE → ORDER BY → LIMIT. Sin el WHERE, aparecerían cierres de otros activos.",
+        pistas: [
+          'Combina un WHERE (de la misión anterior) con ORDER BY y LIMIT.',
+          "WHERE ticker = 'CND' ORDER BY close DESC LIMIT 3",
+          "SELECT date, close FROM prices WHERE ticker = '___' ORDER BY _____ DESC LIMIT _;",
+        ],
+        alternativas: ["SELECT date, close FROM prices WHERE ticker = 'CND' ORDER BY close DESC, date LIMIT 3;"],
+        incorrectas: [
+          {
+            codigo: "SELECT date, close FROM prices WHERE ticker = 'CND' ORDER BY close LIMIT 3;",
+            retro: 'ORDER BY close DESC',
+          },
+          {
+            codigo: 'SELECT date, close FROM prices ORDER BY close DESC LIMIT 3;',
+            retro: "WHERE ticker = 'CND'",
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',

@@ -7,7 +7,7 @@ export default {
   resumen: 'Listas, índices, slicing, len, sum, max y min con datos reales de FRED.',
   pista: 'python',
   lenguaje: 'python',
-  duracion: '7 min',
+  duracion: '10 min',
   requiere: ['py-02'],
   nivelDiagnostico: 3,
   conceptos: ['py.listas', 'py.slicing'],
@@ -184,6 +184,82 @@ export default {
       alternativas: [
         'tbill_rates = [3.01, 1.56, 1.74, 1.17, 0.12, 0.22, 0.18, 0.12]\nrates_2008 = tbill_rates[1:-3]\navg_2008 = sum(rates_2008) / len(rates_2008)',
       ],
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'py-03-jefe',
+      jefe: {
+        nombre: 'Gonzalo Vega',
+        sprite: 'vega',
+        provocacion: 'Llama Retail se recuperó en el último trimestre, te lo digo yo. ¿O me vas a contradecir con datos?',
+        derrota: 'De 11.70 a 7.76 en promedio… Está bien, no se recuperó. Los datos ganan.',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'py-03-jefe-e1',
+        concepto: 'py.slicing',
+        lenguaje: 'python',
+        enunciado:
+          'Gonzalo dice que Llama Retail (LLM) "se recuperó en el último trimestre". `prices` tiene sus 12 cierres mensuales de 2025. Crea:\n\n- `q1`: los 3 primeros meses (posiciones 0 a 2) y `q4`: los 3 últimos (posiciones 9 a 11), con slicing;\n- `q1_avg` y `q4_avg`: el promedio de cada trimestre;\n- `max_price`: el cierre más alto del año.',
+        inicial:
+          '# Cierres mensuales de LLM en 2025 (enero a diciembre)\nprices = [11.28, 11.98, 11.85, 12.89, 11.64, 10.21, 9.48, 9.63, 8.79, 7.59, 7.58, 8.1]\n',
+        solucion:
+          'prices = [11.28, 11.98, 11.85, 12.89, 11.64, 10.21, 9.48, 9.63, 8.79, 7.59, 7.58, 8.1]\nq1 = prices[0:3]\nq4 = prices[9:12]\nq1_avg = sum(q1) / len(q1)\nq4_avg = sum(q4) / len(q4)\nmax_price = max(prices)\nprint(q1_avg, q4_avg, max_price)',
+        verificar: [
+          {
+            tipo: 'variable',
+            nombre: 'q1',
+            ayuda: 'Las posiciones 0 a 2 son prices[0:3]: el final del slice no se incluye.',
+          },
+          {
+            tipo: 'variable',
+            nombre: 'q4',
+            ayuda: 'Para las posiciones 9 a 11 escribe prices[9:12]: el final del slice no se incluye.',
+          },
+          {
+            tipo: 'variable',
+            nombre: 'q1_avg',
+            ayuda: 'Promedio del trimestre: sum(q1) / len(q1).',
+          },
+          {
+            tipo: 'variable',
+            nombre: 'q4_avg',
+            ayuda: 'Promedio del trimestre: sum(q4) / len(q4).',
+          },
+          {
+            tipo: 'variable',
+            nombre: 'max_price',
+            ayuda: 'max_price = max(prices) devuelve el cierre más alto.',
+          },
+          {
+            tipo: 'codigoIncluye',
+            patron: '\\[\\s*-?\\d*\\s*:\\s*-?\\d*\\s*\\]',
+            mensaje: 'Usa slicing: prices[inicio:fin].',
+          },
+        ],
+        explicacion:
+          '`prices[0:3]` toma enero, febrero y marzo, y `prices[9:12]` octubre, noviembre y diciembre: en un slice el final no se incluye. Sus promedios son ≈ 11.70 y ≈ 7.76, y el cierre más alto del año fue 12.89 (abril).\n\nConclusión: LLM **no** se recuperó; el último trimestre promedió mucho menos que el primero. El error típico es `prices[9:11]`, que deja fuera diciembre.',
+        pistas: [
+          'Un slice [inicio:fin] no incluye la posición fin: para llegar a la 11 escribe 12.',
+          'q1 = prices[0:3] y q4 = prices[9:12]; los promedios son sum(...) / len(...).',
+          'q4 = prices[9:___]\nq4_avg = sum(q4) / ___(q4)\nmax_price = ___(prices)',
+        ],
+        alternativas: [
+          'prices = [11.28, 11.98, 11.85, 12.89, 11.64, 10.21, 9.48, 9.63, 8.79, 7.59, 7.58, 8.1]\nq1 = prices[:3]\nq4 = prices[-3:]\nq1_avg = sum(q1) / 3\nq4_avg = sum(q4) / 3\nmax_price = max(prices)',
+        ],
+        incorrectas: [
+          {
+            codigo:
+              'prices = [11.28, 11.98, 11.85, 12.89, 11.64, 10.21, 9.48, 9.63, 8.79, 7.59, 7.58, 8.1]\nq1 = prices[0:3]\nq4 = prices[9:11]\nq1_avg = sum(q1) / len(q1)\nq4_avg = sum(q4) / len(q4)\nmax_price = max(prices)',
+            retro: 'prices[9:12]',
+          },
+          {
+            codigo:
+              'prices = [11.28, 11.98, 11.85, 12.89, 11.64, 10.21, 9.48, 9.63, 8.79, 7.59, 7.58, 8.1]\nq1 = prices[0:3]\nq4 = prices[9:12]\nq1_avg = sum(q1) / 4\nq4_avg = sum(q4) / len(q4)\nmax_price = max(prices)',
+            retro: 'sum(q1) / len(q1)',
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',

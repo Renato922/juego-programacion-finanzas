@@ -7,7 +7,7 @@ export default {
   resumen: 'Bucles for, range() y el patrón acumulador con datos reales (Grunfeld).',
   pista: 'python',
   lenguaje: 'python',
-  duracion: '9 min',
+  duracion: '12 min',
   requiere: ['py-03'],
   nivelDiagnostico: 4,
   conceptos: ['py.for', 'fin.retornos', 'fin.cagr'],
@@ -209,6 +209,71 @@ export default {
           retro: 'los años son 7',
         },
       ],
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'py-04-jefe',
+      jefe: {
+        nombre: 'Gonzalo Vega',
+        sprite: 'vega',
+        provocacion: 'Mi cartera rindió 13.3% al año en promedio. Impresionante, ¿no? A menos que sepas algo que yo no.',
+        derrota: '¿12% de CAGR y no 13.3%? Ya, ya: el promedio simple exagera. No se lo digas a mis clientes.',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'py-04-jefe-e1',
+        concepto: 'fin.cagr',
+        lenguaje: 'python',
+        enunciado:
+          '`values` tiene el valor de la cartera de Gonzalo al cierre de cada año. Con un bucle `for`, crea la lista `returns` con el retorno de cada año respecto al anterior. Luego calcula `cagr`, la tasa de crecimiento anual compuesta de esos 3 años.',
+        inicial: 'values = [100, 120, 108, 140.4]\nreturns = []\n',
+        solucion:
+          'values = [100, 120, 108, 140.4]\nreturns = []\nfor i in range(1, len(values)):\n    returns.append(values[i] / values[i - 1] - 1)\ncagr = (values[-1] / values[0]) ** (1 / 3) - 1\nprint(returns, cagr)',
+        verificar: [
+          {
+            tipo: 'variable',
+            nombre: 'returns',
+            ayuda: 'Recorre i desde 1 con range(1, len(values)) y agrega values[i] / values[i - 1] - 1. Dividir (no restar) da el retorno.',
+          },
+          {
+            tipo: 'variable',
+            nombre: 'cagr',
+            ayuda: 'cagr = (values[-1] / values[0]) ** (1 / 3) - 1: son 3 años (3 saltos entre 4 valores).',
+          },
+          {
+            tipo: 'codigoIncluye',
+            patron: '\\bfor\\b',
+            mensaje: 'Usa un bucle for para crear returns.',
+          },
+        ],
+        explicacion:
+          'El bucle compara cada año con el anterior: +20%, −10% y +30%. Su promedio simple es 13.3%, pero el CAGR, `(140.4 / 100) ** (1 / 3) - 1`, es ≈ 0.1198 (12.0% anual): la tasa fija que, repetida 3 años, lleva de 100 a 140.4.\n\nSon 3 años porque hay 3 saltos entre 4 valores. Usar `(1 / 4)` subestima el crecimiento.',
+        pistas: [
+          'Primero el bucle de retornos (como en la misión) y después la fórmula del CAGR con el primer y el último valor.',
+          'for i in range(1, len(values)):  y adentro  returns.append(values[i] / values[i - 1] - 1)',
+          'cagr = (values[___] / values[0]) ** (1 / ___) - 1',
+        ],
+        alternativas: [
+          'values = [100, 120, 108, 140.4]\nreturns = []\nfor i in range(1, len(values)):\n    returns.append(values[i] / values[i - 1] - 1)\ncagr = (values[-1] / values[0]) ** (1 / len(returns)) - 1',
+        ],
+        incorrectas: [
+          {
+            codigo:
+              'values = [100, 120, 108, 140.4]\nreturns = []\nfor i in range(1, len(values)):\n    returns.append(values[i] - values[i - 1])\ncagr = (values[-1] / values[0]) ** (1 / 3) - 1',
+            retro: 'Dividir (no restar)',
+          },
+          {
+            codigo:
+              'values = [100, 120, 108, 140.4]\nreturns = []\nfor i in range(1, len(values)):\n    returns.append(values[i] / values[i - 1] - 1)\ncagr = (values[-1] / values[0]) ** (1 / 4) - 1',
+            retro: 'son 3 años',
+          },
+          {
+            codigo:
+              'values = [100, 120, 108, 140.4]\nreturns = []\nfor i in range(1, len(values)):\n    returns.append(values[i] / values[i - 1] - 1)\ncagr = sum(returns) / len(returns)',
+            retro: '(1 / 3)',
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',

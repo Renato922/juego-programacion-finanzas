@@ -7,7 +7,7 @@ export default {
   resumen: 'Funciones con def y return: valor presente, cuota de préstamo e interés simple.',
   pista: 'python',
   lenguaje: 'python',
-  duracion: '10 min',
+  duracion: '13 min',
   requiere: ['py-05'],
   nivelDiagnostico: 6,
   conceptos: ['py.funciones', 'fin.valor_presente', 'fin.anualidades'],
@@ -185,6 +185,61 @@ export default {
       ],
       explicacion:
         'Al escribir `years=1` en la definición, `years` pasa a ser opcional: `simple_interest(1000, 0.05)` usa 1 año y da 50.0, y `simple_interest(1000, 0.05, 3)` da 150.0.\n\nSin el `=1`, llamar a la función con dos argumentos da `TypeError` porque falta `years`. Los parámetros con valor por defecto van siempre al final de la lista.',
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'py-06-jefe',
+      jefe: {
+        nombre: 'Gonzalo Vega',
+        sprite: 'vega',
+        provocacion: 'Este préstamo cobra "12% anual". Es 12% y punto. ¿O me vas a decir que cuesta más?',
+        derrota: '12.68% efectivo… Así que la capitalización mensual sí suma. Voy a releer mis contratos.',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'py-06-jefe-e1',
+        concepto: 'py.funciones',
+        lenguaje: 'python',
+        enunciado:
+          'Define `effective_rate(nominal, periods=12)` que **devuelva** la tasa efectiva anual: `(1 + nominal / periods) ** periods - 1`. Si no le pasan `periods`, usa 12 (capitalización mensual).',
+        inicial: '# Define effective_rate aquí\n\n\nprint(effective_rate(0.12))   # debería dar 0.1268...\n',
+        solucion: 'def effective_rate(nominal, periods=12):\n    return (1 + nominal / periods) ** periods - 1\n\nprint(effective_rate(0.12))',
+        verificar: [
+          {
+            tipo: 'funcion',
+            nombre: 'effective_rate',
+            casos: [[0.12], [0.12, 4], [0.12, 1], [0, 12], [0.06, 365]],
+            tol: {
+              rel: 1e-9,
+              abs: 1e-9,
+            },
+            ayuda:
+              'La función devuelve (1 + nominal / periods) ** periods - 1 con return (no print), y el valor por defecto va en la definición: def effective_rate(nominal, periods=12):',
+          },
+        ],
+        explicacion:
+          'La tasa nominal se reparte en `periods` partes y se compone `periods` veces: con 12% nominal y capitalización mensual, `(1 + 0.12 / 12) ** 12 - 1` ≈ 0.1268, o sea 12.68% efectivo al año. Con `periods=4` da ≈ 12.55% y con `periods=1`, exactamente 12%.\n\nEl `=12` en la definición hace que `periods` sea opcional. Los errores típicos son usar `print` en lugar de `return` (la función devolvería None) y olvidar el `- 1` final.',
+        pistas: [
+          'Es una función con un parámetro con valor por defecto, como simple_interest en la misión.',
+          'def effective_rate(nominal, periods=12):  y en la línea siguiente, con 4 espacios, el return.',
+          'def effective_rate(nominal, periods=___):\n    return (1 + nominal / periods) ** _______ - 1',
+        ],
+        alternativas: ['def effective_rate(nominal, periods=12):\n    factor = 1 + nominal / periods\n    return factor ** periods - 1'],
+        incorrectas: [
+          {
+            codigo: 'def effective_rate(nominal, periods=12):\n    print((1 + nominal / periods) ** periods - 1)',
+            retro: '¿Te falta el return?',
+          },
+          {
+            codigo: 'def effective_rate(nominal, periods):\n    return (1 + nominal / periods) ** periods - 1',
+            retro: 'menos argumentos',
+          },
+          {
+            codigo: 'def effective_rate(nominal, periods=12):\n    return (1 + nominal / periods) ** periods',
+            retro: 'periods - 1',
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',

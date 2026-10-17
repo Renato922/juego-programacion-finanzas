@@ -3,28 +3,47 @@
 // solo usa estas funciones.
 
 const nativo = typeof window !== 'undefined' ? window.juegoNativo : undefined;
-const CLAVE = 'condor-capital-progreso';
+// Clave de la única partida que existía antes de las ranuras: se lee como ranura 1.
+const CLAVE_ANTERIOR = 'condor-capital-progreso';
+const claveRanura = (n) => `condor-capital-ranura-${n}`;
+export const RANURAS = 3;
+
+function almacen(accion) {
+  try {
+    return accion(localStorage);
+  } catch {
+    return null;
+  }
+}
 
 export const plataforma = {
   tipo: nativo ? 'escritorio' : 'navegador',
 
-  async leerProgreso() {
-    if (nativo) return nativo.leerProgreso();
-    try {
-      return localStorage.getItem(CLAVE);
-    } catch {
-      return null;
-    }
+  async leerPartida(n) {
+    if (nativo) return nativo.leerPartida(n);
+    return almacen((ls) => ls.getItem(claveRanura(n)) ?? (n === 1 ? ls.getItem(CLAVE_ANTERIOR) : null));
   },
 
-  async guardarProgreso(texto) {
-    if (nativo) return nativo.guardarProgreso(texto);
-    try {
-      localStorage.setItem(CLAVE, texto);
-      return true;
-    } catch {
-      return false;
-    }
+  async guardarPartida(n, texto) {
+    if (nativo) return nativo.guardarPartida(n, texto);
+    return almacen((ls) => (ls.setItem(claveRanura(n), texto), true)) ?? false;
+  },
+
+  async borrarPartida(n) {
+    if (nativo) return nativo.borrarPartida(n);
+    return (
+      almacen((ls) => {
+        ls.removeItem(claveRanura(n));
+        if (n === 1) ls.removeItem(CLAVE_ANTERIOR);
+        return true;
+      }) ?? false
+    );
+  },
+
+  // Solo en escritorio: en el navegador se cierra la pestaña.
+  puedeSalir: Boolean(nativo),
+  salir() {
+    if (nativo) nativo.salir();
   },
 
   async exportarArchivo(nombre, contenido) {

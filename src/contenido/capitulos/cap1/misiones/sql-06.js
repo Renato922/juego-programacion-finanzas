@@ -7,7 +7,7 @@ export default {
   resumen: 'INNER JOIN, alias de tablas y LEFT JOIN para encontrar faltantes.',
   pista: 'sql',
   lenguaje: 'sql',
-  duracion: '10 min',
+  duracion: '13 min',
   requiere: ['sql-05'],
   nivelDiagnostico: 6,
   conceptos: ['sql.join', 'sql.left_join'],
@@ -160,6 +160,49 @@ export default {
           retro: 'LEFT JOIN',
         },
       ],
+    },
+    {
+      tipo: 'jefeDia',
+      id: 'sql-06-jefe',
+      jefe: {
+        nombre: 'Rita Ledesma',
+        sprite: 'ledesma',
+        provocacion: 'Último reto de la semana: todos sus clientes con su número de operaciones. TODOS. Incluso los que no han operado.',
+        derrota: 'Sofía Rojas con 0 operaciones, y no se perdió en el camino. LEFT JOIN y COUNT bien usados. Te respeto, {nombre}.',
+      },
+      paso: {
+        tipo: 'ejercicio',
+        id: 'sql-06-jefe-e1',
+        concepto: 'sql.left_join',
+        lenguaje: 'sql',
+        db: 'fondo',
+        enunciado:
+          'Lista **todos** los clientes con su número de operaciones: `c.name` y `COUNT(t.trade_id) AS n_trades`. Los clientes sin operaciones deben aparecer con **0**.',
+        inicial: '',
+        solucion: 'SELECT c.name, COUNT(t.trade_id) AS n_trades FROM clients c LEFT JOIN trades t ON c.client_id = t.client_id GROUP BY c.client_id;',
+        opciones: {
+          ayuda:
+            'Para no perder a los clientes sin operaciones usa LEFT JOIN desde clients, y cuenta con COUNT(t.trade_id): COUNT(columna) no cuenta los NULL, así que da 0 para quien no operó.',
+        },
+        explicacion:
+          '`LEFT JOIN` conserva a los 8 clientes; para Sofía Rojas, que no tiene operaciones, las columnas de `t` quedan en NULL. `GROUP BY c.client_id` arma un grupo por cliente y `COUNT(t.trade_id)` cuenta sus operaciones.\n\nLa clave está en contar una columna de `trades`: `COUNT(*)` contaría la fila de Sofía y daría 1 en lugar de 0. Con un `JOIN` normal, Sofía ni siquiera aparecería.',
+        pistas: [
+          'Junta dos ideas: LEFT JOIN (misión de hoy) y que COUNT(columna) no cuenta NULL (misión de agregados).',
+          'FROM clients c LEFT JOIN trades t ON c.client_id = t.client_id GROUP BY c.client_id',
+          'SELECT c.name, COUNT(t.________) AS n_trades FROM clients c ____ JOIN trades t ON c.client_id = t.client_id GROUP BY c.client_id;',
+        ],
+        alternativas: ['SELECT c.name, COUNT(t.trade_id) AS n_trades FROM clients c LEFT JOIN trades t ON c.client_id = t.client_id GROUP BY c.name;'],
+        incorrectas: [
+          {
+            codigo: 'SELECT c.name, COUNT(t.trade_id) AS n_trades FROM clients c JOIN trades t ON c.client_id = t.client_id GROUP BY c.client_id;',
+            retro: 'LEFT JOIN desde clients',
+          },
+          {
+            codigo: 'SELECT c.name, COUNT(*) AS n_trades FROM clients c LEFT JOIN trades t ON c.client_id = t.client_id GROUP BY c.client_id;',
+            retro: 'COUNT(t.trade_id)',
+          },
+        ],
+      },
     },
     {
       tipo: 'dialogo',
