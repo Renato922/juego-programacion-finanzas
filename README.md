@@ -50,6 +50,20 @@ Cada vez que se sube un cambio, GitHub arma el juego automáticamente:
 
 También puedes lanzarlo a mano con el botón **Run workflow** en esa misma página.
 
+## Instalar y jugar (Mac)
+GitHub también arma una versión para Mac (un solo `.dmg` que sirve para procesadores Intel y Apple Silicon):
+1. Pestaña **Actions** → **Construir para Mac** → la ejecución más reciente con ✓ verde.
+2. En **Artifacts**, descarga **CondorCapital-Mac** (llega como .zip) y descomprímelo.
+3. Abre `CondorCapital-Mac-0.1.0.dmg` y arrastra **Condor Capital** a la carpeta **Aplicaciones**.
+4. La primera vez, macOS lo bloqueará porque la app no está firmada por Apple (firmar cuesta dinero). Ábrela una vez, cierra el aviso y ve a **Ajustes del Sistema → Privacidad y seguridad**; abajo aparece "Se bloqueó Condor Capital": haz clic en **Abrir igualmente**.
+5. Si en lugar de eso macOS dice que la app "está dañada", abre la app **Terminal** y ejecuta:
+   ```bash
+   xattr -cr "/Applications/Condor Capital.app"
+   ```
+   Ese comando solo quita la marca de "descargado de internet"; después la app abre normalmente.
+
+La primera vez que uses Python, el juego necesita internet para descargarlo (Pyodide, unos 12 MB); después funciona sin conexión.
+
 ### Jugar en el navegador (modo desarrollo)
 ```bash
 npm run web

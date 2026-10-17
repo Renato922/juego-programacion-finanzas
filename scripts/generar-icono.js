@@ -1,5 +1,6 @@
 // Genera el ícono del juego (pixel art de una moneda con un cóndor) como
-// PNG 256×256 y como .ico para Windows, sin dependencias externas.
+// PNG 256×256, como .ico para Windows y como PNG 1024×1024 para Mac
+// (electron-builder pide al menos 512×512), sin dependencias externas.
 // Uso: npm run icono
 
 import fs from 'node:fs';
@@ -108,6 +109,7 @@ function ico(tamanos) {
 fs.mkdirSync(path.join(RAIZ, 'build'), { recursive: true });
 fs.mkdirSync(path.join(RAIZ, 'src', 'recursos'), { recursive: true });
 fs.writeFileSync(path.join(RAIZ, 'build', 'icon.png'), png(256));
+fs.writeFileSync(path.join(RAIZ, 'build', 'icon-mac.png'), png(1024));
 fs.writeFileSync(path.join(RAIZ, 'build', 'icon.ico'), ico([16, 32, 48, 64, 128, 256]));
 fs.writeFileSync(path.join(RAIZ, 'src', 'recursos', 'icono.png'), png(64));
 console.log('Íconos generados en build/ y src/recursos/');
