@@ -29,7 +29,8 @@ export default {
         },
         {
           quien: 'marta',
-          texto: 'Regla de la casa: nadie nace sabiendo. Si tu código falla, lo arreglamos. Equivocarte nunca te quita lo que ya ganaste: solo te pide practicar un poco más.',
+          texto:
+            'Regla de la casa: nadie nace sabiendo. Si tu código falla, lo arreglamos. Equivocarte nunca te quita lo que ya ganaste: solo te pide practicar un poco más.',
         },
       ],
     },
