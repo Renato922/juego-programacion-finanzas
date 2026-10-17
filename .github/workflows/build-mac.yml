@@ -1,0 +1,46 @@
+# Construye el juego para Mac en los servidores de GitHub (gratis dentro de
+# los minutos mensuales de GitHub Actions; sin firma de Apple ni servicios pagados).
+#
+# Cómo descargarlo: pestaña Actions → "Construir para Mac" → la ejecución más
+# reciente → sección "Artifacts" → "CondorCapital-Mac". Es un .dmg universal:
+# funciona en Mac con procesador Intel y con Apple Silicon (M1, M2, …).
+# Como no está firmado por Apple, la primera vez hay que permitirlo en
+# Ajustes del Sistema → Privacidad y seguridad (ver README).
+
+name: Construir para Mac
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, claude/sleepy-cerf-sl5vth]
+
+jobs:
+  mac:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Pruebas
+        run: npm test
+
+      - name: Construir el .dmg
+        run: npx electron-builder --mac dmg --universal --publish never
+
+      - name: Revisar la firma ad hoc de la app
+        run: codesign --verify --deep --strict --verbose=2 dist/mac-universal/*.app
+
+      - name: Subir el .dmg
+        uses: actions/upload-artifact@v4
+        with:
+          name: CondorCapital-Mac
+          path: dist/CondorCapital-Mac-*.dmg
+          if-no-files-found: error

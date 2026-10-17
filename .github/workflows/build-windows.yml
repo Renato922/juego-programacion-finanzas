@@ -1,0 +1,48 @@
+# Construye el juego para Windows en los servidores de GitHub (gratis dentro
+# de los minutos mensuales de GitHub Actions; sin firma ni servicios pagados).
+#
+# Cómo descargarlo: pestaña Actions → la ejecución más reciente →
+# sección "Artifacts" → "CondorCapital-Instalador" (o la versión portable).
+# El instalador crea un acceso directo "Cóndor Capital" en el escritorio.
+
+name: Construir para Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, claude/sleepy-cerf-sl5vth]
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Pruebas
+        run: npm test
+
+      - name: Construir instalador y versión portable
+        run: npx electron-builder --win nsis portable --publish never
+
+      - name: Subir instalador
+        uses: actions/upload-artifact@v4
+        with:
+          name: CondorCapital-Instalador
+          path: dist/CondorCapital-Instalador-*.exe
+          if-no-files-found: error
+
+      - name: Subir versión portable
+        uses: actions/upload-artifact@v4
+        with:
+          name: CondorCapital-Portable
+          path: dist/CondorCapital-Portable-*.exe
+          if-no-files-found: error

@@ -1,0 +1,79 @@
+{
+  "name": "juego-programacion-finanzas",
+  "productName": "Condor Capital",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cóndor Capital: juego para aprender Python, SQL, R, Power BI y Excel/VBA aplicados a finanzas.",
+  "author": "Renato",
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "web": "node scripts/servidor-dev.js",
+    "test": "node --test \"test/*.test.js\"",
+    "icono": "node scripts/generar-icono.js",
+    "dist": "electron-builder --win",
+    "dist:carpeta": "electron-builder --win --dir",
+    "formato": "prettier --write \"src/**/*.{js,css,html}\" \"test/**/*.js\" \"electron/**/*.{js,cjs}\" \"scripts/**/*.js\""
+  },
+  "dependencies": {
+    "@fontsource/press-start-2p": "5.2.5",
+    "@fontsource/vt323": "5.2.5",
+    "codemirror": "5.65.21",
+    "sql.js": "1.13.0"
+  },
+  "devDependencies": {
+    "electron": "44.4.5",
+    "electron-builder": "26.17.0",
+    "pyodide": "0.29.5"
+  },
+  "build": {
+    "appId": "com.renato922.condorcapital",
+    "productName": "Condor Capital",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "src/**/*",
+      "datos/**/*",
+      "build/icon.png",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Cóndor Capital",
+      "artifactName": "CondorCapital-Instalador-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "CondorCapital-Portable-${version}.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "icon": "build/icon-mac.png",
+      "category": "public.app-category.education",
+      "identity": "-",
+      "hardenedRuntime": false
+    },
+    "dmg": {
+      "artifactName": "CondorCapital-Mac-${version}.${ext}"
+    }
+  }
+}
